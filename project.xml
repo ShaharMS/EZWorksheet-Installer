@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="EZWorksheet" package="com.spacebubble.ezworksheet" version="1.0.0" company="SpaceBubble" />
+	<app main="Main" path="Export" file="EZWorksheet" width="1200" height= "600" fps="" />
+	
+	<source path="Source" />
+	
+	<haxelib name="openfl"/>
+	
+	<assets path="Assets" rename="assets"/>
+	<icon path="assets/preicon.ico"/>
+	
+</project>

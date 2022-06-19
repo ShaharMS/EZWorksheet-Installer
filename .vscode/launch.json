@@ -1,0 +1,30 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		
+	{
+		"type": "java",
+		"name": "Launch External Terminal",
+		"request": "launch",
+		"console": "externalTerminal",
+		"mainClass": ""
+	},
+		{
+			"name": "Build + Debug",
+			"type": "lime",
+			"request": "launch",
+			
+		},
+		{
+			"name": "Debug",
+			"type": "lime",
+			"request": "launch",
+			"preLaunchTask": null
+		},
+		{
+			"name": "Macro",
+			"type": "haxe-eval",
+			"request": "launch"
+		}
+	]
+}

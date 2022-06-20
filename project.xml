@@ -2,7 +2,9 @@
 <project>
 	
 	<meta title="EZWorksheet" package="com.spacebubble.ezworksheet" version="1.0.0" company="SpaceBubble" />
-	<app main="Main" path="Export" file="EZWorksheet" width="400" height= "400" fps="" />
+	<app main="Main" path="Export" file="EZWorksheet" width="400" height= "400" fps=""/>
+	<window background="#333333" />
+	
 	
 	<source path="Source" />
 	

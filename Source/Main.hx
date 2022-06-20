@@ -1,13 +1,24 @@
 package;
 
-import openfl.display.Sprite;
 
+import sys.io.File;
+import sys.FileSystem;
+import openfl.display.Sprite;
+import openfl.text.TextFormat;
 class Main extends Sprite
 {
-	public static var mode(default, null):InstallerMode = MANUAL;
+	public static var mode(default, null):InstallerMode = AUTOUPDATE;
+
+	public static final textFormat:TextFormat = new TextFormat(fontName, fontSize, fontColor);
 	
 	public function new()
 	{
+		if (!FileSystem.exists("/currentVersion.txt")) {
+			var handle = File.write(versionSave);
+			handle.writeString("N/A");
+			handle.close();
+		}
+
 		final args = Sys.args();
 		for (arg in args) {
 			switch arg {

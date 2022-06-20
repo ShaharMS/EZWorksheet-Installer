@@ -1,5 +1,9 @@
 package;
 
+import haxe.Timer;
+import sys.io.File;
+import haxe.Http;
+import openfl.text.TextField;
 import openfl.display.Sprite;
 import openfl.Lib.application as app;
 
@@ -10,11 +14,43 @@ import openfl.Lib.application as app;
  */
 class AutoUpdater extends Sprite {
     
+    var titleField:TextField = new TextField();
+
     public function new() {
         super();
         app.window.x = 5;
         app.window.y = 35;
         app.window.width = 250;
         app.window.height = 100;
+
+        titleField.defaultTextFormat = Main.textFormat;
+        titleField.text = "Checking for updates...";
+        titleField.width = titleField.textWidth;
+        titleField.height = titleField.textHeight;
+        //screenCenter
+        titleField.x = (app.window.width - titleField.width) / 2;
+        titleField.y = (app.window.height - titleField.height) / 2;
+        addChild(titleField);
+        var httpReq = new Http(appVersionLink);
+
+        httpReq.onError = function(e:String) {
+            titleField.text = "Error: " + e;
+        }
+
+        httpReq.onData = function (data:String) {
+            Timer.delay(() -> {
+				var handle = File.read(versionSave);
+				final installedVersion = handle.readLine();
+				handle.close();
+				if (installedVersion != data) {
+					titleField.text = "Downloading version " + data + "...";
+					titleField.width = titleField.textWidth;
+					titleField.x = app.window.width / 2 - titleField.textWidth / 2;
+				} else
+					Sys.exit(0);
+            }, 500);
+        }
+
+        httpReq.request();
     }
 }

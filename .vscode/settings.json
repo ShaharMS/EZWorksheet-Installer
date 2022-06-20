@@ -12,7 +12,6 @@
 	},
 	"haxe.enableExtendedIndentation": true,
 	"git.ignoreLimitWarning": true,
-	"haxe.configurations": [],
-	"haxe.enableCompilationServer": false
+	"haxe.configurations": []
 }
 

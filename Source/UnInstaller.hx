@@ -2,7 +2,7 @@ package;
 
 import openfl.display.Sprite;
 
-class Updater extends Sprite {
+class UnInstaller extends Sprite {
     
     public function new() {
         super();

@@ -27,7 +27,7 @@ class AutoUpdater extends Sprite {
         titleField.text = "Checking for updates...";
         titleField.width = titleField.textWidth;
         titleField.height = titleField.textHeight;
-        //screenCenter
+
         titleField.x = (app.window.width - titleField.width) / 2;
         titleField.y = (app.window.height - titleField.height) / 2;
         addChild(titleField);

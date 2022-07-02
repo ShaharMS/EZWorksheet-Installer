@@ -1,5 +1,9 @@
 package;
 
+import openfl.display.Shape;
+import sys.FileSystem;
+import openfl.system.System;
+
 final backgroundColor:Int = 0xFF333333;
 final fontColor:Int = 0xEEFFFFFF;
 final fontSize:Int = 14;
@@ -8,3 +12,8 @@ final downloadLink:String = "https://spacebubble.io/apps/ezworksheet/app";
 final appVersionLink:String = "https://spacebubble.io/apps/ezworksheet/api/version";
 final versionSave = "version.txt";
 final installerFolder = "installer";
+final programFolder = Sys.getEnv("HOME") + "/EZWorksheet/program";
+
+function startDownloadWithSaveAndBar(progressBar:Shape) {
+    
+}

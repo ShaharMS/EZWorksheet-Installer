@@ -1,5 +1,6 @@
 package;
 
+import openfl.display.Shape;
 import haxe.Timer;
 import sys.io.File;
 import haxe.Http;
@@ -46,6 +47,17 @@ class AutoUpdater extends Sprite {
 					titleField.text = "Downloading version " + data + "...";
 					titleField.width = titleField.textWidth;
 					titleField.x = app.window.width / 2 - titleField.textWidth / 2;
+                    titleField.y = app.window.width / 4 - titleField.textHeight / 2;
+
+                    var s = new Shape();
+                    s.graphics.lineStyle(1, 0x000000);
+                    s.graphics.drawRect(0, 0, app.window.width / 2, 30);
+                    s.x = app.window.width / 2 - s.width / 2;
+                    s.y = app.window.width / 4 * 3 - s.height / 2;
+                    addChild(s);
+
+                    startDownloadWithSaveAndBar(s);
+
 				} else
 					Sys.exit(0);
             }, 500);

@@ -13,6 +13,7 @@ class Main extends Sprite
 	
 	public function new()
 	{
+		this.stage.window.focus();
 		if (!FileSystem.exists("/currentVersion.txt")) {
 			var handle = File.write(versionSave);
 			handle.writeString("N/A");

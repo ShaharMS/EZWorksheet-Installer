@@ -32,7 +32,7 @@ function startDownloadWithSaveAndBar(progressBar:Shape, version:String) {
 		progressBar.graphics.drawRect(0, 0, 200, 30);
         progressBar.graphics.lineStyle(0);
         progressBar.graphics.beginFill(0x0FD623);
-        progressBar.graphics.drawRect(0, 0, e.bytesLoaded / e.bytesTotal * 100, 10);
+        progressBar.graphics.drawRect(0, 0, e.bytesLoaded / e.bytesTotal * 200, 10);
         progressBar.graphics.endFill();
     });
 }

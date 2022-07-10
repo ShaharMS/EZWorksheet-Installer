@@ -6,3 +6,4 @@ import Config.fontName;
 import Config.fontSize;
 import Config.programFolder;
 import Config.versionSave;
+import openfl.Lib.application as app;

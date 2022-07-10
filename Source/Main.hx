@@ -7,7 +7,7 @@ import openfl.display.Sprite;
 import openfl.text.TextFormat;
 class Main extends Sprite
 {
-	public static var mode(default, null):InstallerMode = AUTOUPDATE;
+	public static var mode(default, null):InstallerMode = MANUAL;
 
 	public static final textFormat:TextFormat = new TextFormat(fontName, fontSize, fontColor);
 	
@@ -27,6 +27,7 @@ class Main extends Sprite
 				case "-autoUpdate": mode = AUTOUPDATE;
 				case "-firstInstall" | "-firstRun" | "-first": mode = INSTALL;
 				case "-uninstall": mode = UNINSTALL;
+				case "-regular" | "-manual": mode = MANUAL;
 			}
 		}
 		super();
@@ -35,10 +36,7 @@ class Main extends Sprite
 			case UNINSTALL: addChild(new UnInstaller());
 			case UPDATE: addChild(new Updater());
 			case AUTOUPDATE: addChild(new AutoUpdater());
-			case MANUAL: 
-		}
-		if (mode != MANUAL) {
-			
+			case MANUAL: addChild(new Menu());
 		}
 	}
 }

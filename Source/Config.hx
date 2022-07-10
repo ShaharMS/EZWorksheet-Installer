@@ -1,5 +1,6 @@
 package;
 
+import openfl.Lib;
 import exceptions.UnknownSystemException;
 import openfl.display.Shape;
 import openfl.events.ErrorEvent;

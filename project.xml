@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<meta title="EZWorksheet-Installer" package="com.spacebubble.ezworksheet" version="1.0.0" company="SpaceBubble" />
+	<meta title="EZWorksheet Installer" package="com.spacebubble.ezworksheet" version="1.0.0" company="SpaceBubble" />
 	<app main="Main" path="Export" file="EZWorksheet-Installer" fps=""/>
 	<window background="#333333" width="250" height="100" alwaysOnTop="true"/>
 	

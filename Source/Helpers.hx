@@ -17,13 +17,14 @@ class Button extends Sprite {
 
     public var textField:TextField;
 
-    public var callback:(MouseEvent) -> Void = (e) -> {trace("Button clicked");};
+    public var oldCallback:(MouseEvent) -> Void;
+    public var onClick(default, set):(MouseEvent) -> Void = (e) -> {trace("Button clicked");};
 
     public var onHover:(MouseEvent) -> Void = (e) -> {trace("Button hovered");};
 
     public function new(text:String) {
         super();
-
+        oldCallback = onClick;
 		this.useHandCursor = true;
 
         this.textField = new TextField();
@@ -42,7 +43,7 @@ class Button extends Sprite {
         this.graphics.lineStyle(1, 0x000000);
         this.graphics.drawRect(0, 0, width, height);
 
-        addEventListener(MouseEvent.CLICK, callback);
+        addEventListener(MouseEvent.CLICK, oldCallback);
         //add event listeners to change the button's appearance on hover and the mouses cursor
         addEventListener(MouseEvent.MOUSE_OVER, e -> {
             this.graphics.clear();
@@ -68,6 +69,13 @@ class Button extends Sprite {
 			this.graphics.drawRect(0, 0, width, height);
 			this.graphics.endFill();
         });
+    }
+
+    function set_onClick(callback:(MouseEvent) -> Void) {
+        this.removeEventListener(MouseEvent.CLICK, oldCallback);
+        this.addEventListener(MouseEvent.CLICK, callback);
+        oldCallback = callback;
+        return callback;
     }
 
     override function set_width(value:Float):Float {

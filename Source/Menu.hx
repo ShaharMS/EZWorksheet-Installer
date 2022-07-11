@@ -52,6 +52,7 @@ class Menu extends Sprite {
         sidemenu.push(installButton);
         var quickUpdate = new Button("Quick Update");
         quickUpdate.width = 90;
+        quickUpdate.onClick = e -> {parent.addChild(new AutoUpdater()); parent.removeChild(this);};
         sidemenu.push(quickUpdate);
         var updateButton:Button = new Button("Update");
         updateButton.width = 90;

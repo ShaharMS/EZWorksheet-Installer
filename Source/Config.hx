@@ -1,5 +1,6 @@
 package;
 
+import sys.io.Process;
 import openfl.Lib;
 import exceptions.UnknownSystemException;
 import openfl.display.Shape;
@@ -21,8 +22,16 @@ final versionSave = "version.txt";
 final installerFolder = "installer";
 
 final programFolder = switch Sys.systemName() {
-		case "Windows": "C:/Users/" + Sys.getEnv("USERNAME") + "/Documents/EZWorksheet/app/";
-		case "Mac": Sys.getEnv("$HOME") + "/Documents/EZWorksheet/app/";
-		case "Linux": "~/.local/share/EZWorksheet/app/";
-		default: throw new UnknownSystemException();
-	};
+	case "Windows": getWindowsDocumentsFolder() + "\\EZWorksheet\\app\\";
+	case "Mac": Sys.getEnv("$HOME") + "/Documents/EZWorksheet/app/";
+	case "Linux": "~/.local/share/EZWorksheet/app/";
+	default: throw new UnknownSystemException();
+};
+
+function getWindowsDocumentsFolder() {
+	#if windows
+	var p = new Process("powershell", ["[Environment]::GetFolderPath(\"MyDocuments\")"]);
+	return '${p.stdout.readLine()}';
+	#end
+	return "";
+}

@@ -20,6 +20,8 @@ import openfl.display.Sprite;
 import openfl.text.TextField;
 import sys.io.File;
 
+using StringTools;
+
 /**
  * The auto updater doesnt require any user interaction, and just downloads stuff.
  * 
@@ -113,24 +115,27 @@ class AutoUpdater extends Sprite {
             var input = new BytesInput(request.data);
             var reader = new Reader(input);
             var entries = reader.read();
-
-            if (FileSystem.exists(programFolder + "\\" + version)) {
-                deleteDirectory(programFolder + "\\" + version);
+			var writeFolder = programFolder;
+            if (FileSystem.exists(programFolder + "\\" + version) || FileSystem.exists(Sys.getEnv("USERPROFILE") + "\\EZWorksheet\\app\\" + version)) {
+                infoText.text = 'Version $version already installed.\n\nYou are up to date :)';
+				Sys.sleep(1.5);
+				Sys.exit(0);
             }
-
-            for (entry in entries) {
-				var data = Reader.unzip(entry);
-				if (entry.fileName.substring(entry.fileName.lastIndexOf('/') + 1) == '' && entry.data.toString() == '') {
-					sys.FileSystem.createDirectory(programFolder + entry.fileName);
-                    trace("Created directory " + entry.fileName);
-				} else {
-					var f = File.write(programFolder  + entry.fileName, true);
-					f.write(data);
-					f.close();
-                    trace("Created file " + entry.fileName);
-				}
-            }
-            infoText.text = 'Done! App Found at:\n\n' + programFolder + version;
+			try {
+				writeProgram(programFolder, entries);
+			} catch(e)	{
+				infoText.text = '
+				Notice! you have the Windows setting Controlled Access enabled.
+				\n
+				\n 
+				The program will try to reinstall in this directory:
+				\n
+				\n + 
+				${Sys.getEnv("USERPROFILE")}';
+				writeFolder = Sys.getEnv("USERPROFILE") + "\\EZWorksheet\\app\\";
+				writeProgram(Sys.getEnv("USERPROFILE") + "\\EZWorksheet\\app\\", entries);
+			}
+            infoText.text = 'Done! App Found at:\n\n' + writeFolder + version;
             infoText.setTextFormat(new TextFormat(null, 12), 21, infoText.text.length);
 			infoText.multiline = true;
             infoText.wordWrap = true;
@@ -158,4 +163,26 @@ class AutoUpdater extends Sprite {
         }
         FileSystem.deleteDirectory(dir);
     }
+
+	function writeProgram(folder:String, entries:haxe.ds.List<haxe.zip.Entry>) {
+		for (entry in entries) {
+			var data = Reader.unzip(entry);
+			if (entry.fileName.substring(entry.fileName.lastIndexOf('/') + 1) == '' && entry.data.toString() == '') {
+				sys.FileSystem.createDirectory(folder + entry.fileName);
+				trace("Created directory " + entry.fileName);
+			} else {
+				var f = File.write(folder + entry.fileName, true);
+				f.write(data);
+				f.close();
+				trace("Created file " + entry.fileName);
+			}
+		}
+	}
+
+	function makeUserFolder(folder:String) {
+		if (folder.split('\\')[-2] != 'Users') {
+			return makeUserFolder(folder.substring(0, folder.lastIndexOf('\\')));
+		}
+		return folder;
+	}
 }

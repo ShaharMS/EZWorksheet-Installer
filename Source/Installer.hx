@@ -82,7 +82,7 @@ class Segment1 extends Sprite {
 		});
 
 		//"center" the dropdown
-		dropdown.x = (stage.stageWidth - dropdown.width) / 2 - 50;
+		dropdown.x = (app.window.width - dropdown.width) / 2 - 50;
 		dropdown.y = title.y + title.height + 10;
 		addChild(dropdown);
 

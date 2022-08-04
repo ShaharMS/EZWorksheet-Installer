@@ -6,6 +6,7 @@ import sys.io.File;
 import sys.FileSystem;
 import openfl.display.Sprite;
 import openfl.text.TextFormat;
+import haxe.ui.Toolkit;
 class Main extends Sprite
 {
 	public static inline var TEST:Bool = true;
@@ -16,6 +17,8 @@ class Main extends Sprite
 	
 	public function new()
 	{
+		Toolkit.init();
+		Toolkit.theme = "dark";
 		this.stage.window.focus();
 		if (!FileSystem.exists("/currentVersion.txt")) {
 			var handle = File.write(versionSave);

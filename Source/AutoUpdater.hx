@@ -107,17 +107,28 @@ class AutoUpdater extends Sprite {
 		request.addEventListener(Event.COMPLETE, function(e:Event) {
 			removeChild(progressBar);
 
-            infoText.text = 'Installing And Extracting version $version...';
+            infoText.text = 'Installing And Extracting\n\nversion $version...';
+			infoText.width = infoText.textWidth + 50;
+			infoText.height = 200;
+			infoText.defaultTextFormat = new TextFormat(null, null, null, null, null, null, null, null, CENTER);
+			infoText.multiline = true;
+			infoText.wordWrap = true;
             //center the text
-            infoText.x = app.window.width / 2 - infoText.textWidth / 2;
+            infoText.x = app.window.width / 2 - infoText.width / 2;
             infoText.y = app.window.height / 2 - infoText.textHeight / 2;
-
+			//check for tests
+			if (Sys.args().contains("-test") || Main.TEST) return;
             var input = new BytesInput(request.data);
             var reader = new Reader(input);
             var entries = reader.read();
 			var writeFolder = programFolder;
             if (FileSystem.exists(programFolder + "\\" + version) || FileSystem.exists(Sys.getEnv("USERPROFILE") + "\\EZWorksheet\\app\\" + version)) {
                 infoText.text = 'Version $version already installed.\n\nYou are up to date :)';
+				infoText.width = infoText.textWidth / 3 * 2;
+				infoText.height = 200;
+				// center the text
+				infoText.x = app.window.width / 2 - infoText.textWidth / 2;
+				infoText.y = app.window.height / 2 - infoText.textHeight / 2;
 				Sys.sleep(1.5);
 				Sys.exit(0);
             }
@@ -132,15 +143,17 @@ class AutoUpdater extends Sprite {
 				\n
 				\n + 
 				${Sys.getEnv("USERPROFILE")}';
+				infoText.width = app.window.width - 50;
+				infoText.height = infoText.textHeight;
+				// center the text
+				infoText.x = app.window.width / 2 - infoText.textWidth / 2;
+				infoText.y = app.window.height / 2 - infoText.textHeight / 2;
+
 				writeFolder = Sys.getEnv("USERPROFILE") + "\\EZWorksheet\\app\\";
 				writeProgram(Sys.getEnv("USERPROFILE") + "\\EZWorksheet\\app\\", entries);
 			}
             infoText.text = 'Done! App Found at:\n\n' + writeFolder + version;
             infoText.setTextFormat(new TextFormat(null, 12), 21, infoText.text.length);
-			infoText.multiline = true;
-            infoText.wordWrap = true;
-            infoText.autoSize = TextFieldAutoSize.CENTER;
-            infoText.width = 200;
             //center the text
             infoText.x = app.window.width / 2 - infoText.textWidth / 2;
             infoText.y = app.window.height / 2 - infoText.textHeight / 2;

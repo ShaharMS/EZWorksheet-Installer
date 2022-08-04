@@ -1,7 +1,7 @@
 package;
 
-import Helpers.Button;
-import Helpers.SideMenu;
+import graphics.SideMenu;
+import graphics.Button;
 import openfl.text.TextFormat;
 import openfl.text.TextField;
 import openfl.display.Sprite;
@@ -49,6 +49,7 @@ class Menu extends Sprite {
 
         var installButton:Button = new Button("Install");
         installButton.width = 90;
+        installButton.onClick = e -> {parent.addChild(new Installer()); parent.removeChild(this);};
         sidemenu.push(installButton);
         var quickUpdate = new Button("Quick Update");
         quickUpdate.width = 90;

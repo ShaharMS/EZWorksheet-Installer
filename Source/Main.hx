@@ -8,6 +8,8 @@ import openfl.display.Sprite;
 import openfl.text.TextFormat;
 class Main extends Sprite
 {
+	public static inline var TEST:Bool = true;
+
 	public static var mode(default, null):InstallerMode = MANUAL;
 
 	public static final textFormat:TextFormat = new TextFormat(fontName, fontSize, fontColor);

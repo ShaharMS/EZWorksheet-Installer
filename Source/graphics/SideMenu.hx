@@ -13,8 +13,11 @@ class SideMenu extends Sprite {
 
 	var bottomStep:Float = -1;
 
-	public var objects:Array<Sprite> = [];
+	public var objects:Array<{side:Int, object:Sprite}> = [];
 
+
+	var pwwidth:Float = app.window.width;
+	var pwheight:Float = app.window.height;
 	public function new(width:Float) {
 		super();
 
@@ -25,6 +28,19 @@ class SideMenu extends Sprite {
 		this.graphics.drawRect(0, 0, 1, app.window.height);
 		this.x = app.window.width - width;
 		this.y = 0;
+
+		app.window.onResize.add((w, h) -> {
+			this.x = app.window.width - width;
+			this.graphics.beginFill(0x000000);
+			this.graphics.lineStyle(1, 0x000000);
+			this.graphics.drawRect(0, 0, 1, app.window.height);
+			for (o in objects) {
+				if (o.side == 0) continue;
+				o.object.y += h - pwheight;
+			}
+			pwheight = h;
+			pwwidth = w;
+		});
 	}
 
 	public function push(object:Sprite):SideMenu {
@@ -34,7 +50,7 @@ class SideMenu extends Sprite {
 			step = object.x;
 		object.y = step;
 		step += object.height + 5;
-		objects.push(object);
+		objects.push({side: 0, object: object});
 		addChild(object);
 		return this;
 	}
@@ -62,7 +78,7 @@ class SideMenu extends Sprite {
 			bottomStep = object.x + object.height;
 		object.y = app.window.height - bottomStep;
 		bottomStep += object.height + 5;
-		objects.push(object);
+		objects.push({side: 1, object: object});
 		addChild(object);
 		return this;
 	}

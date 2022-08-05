@@ -1,5 +1,6 @@
 package;
 
+import sys.FileSystem;
 import haxe.Http;
 import sys.io.Process;
 import exceptions.UnknownSystemException;
@@ -17,6 +18,13 @@ final installerFolder = "installer";
 
 final programFolder = switch Sys.systemName() {
 	case "Windows": getWindowsDocumentsFolder() + "\\EZWorksheet\\app\\";
+	case "Mac": Sys.getEnv("$HOME") + "/Documents/EZWorksheet/app/";
+	case "Linux": "~/.local/share/EZWorksheet/app/";
+	default: throw new UnknownSystemException();
+};
+
+final fallbackProgramFolder = switch Sys.systemName() {
+	case "Windows": Sys.getEnv("USERPROFILE") + "\\EZWorksheet\\app\\";
 	case "Mac": Sys.getEnv("$HOME") + "/Documents/EZWorksheet/app/";
 	case "Linux": "~/.local/share/EZWorksheet/app/";
 	default: throw new UnknownSystemException();
@@ -40,4 +48,10 @@ function getVersionList(callback:(Array<String>) -> Void) {
 		callback([]);
 	};
 	httpreq.request();
+}
+
+function hasProgram(version:String) {
+	var exists = FileSystem.exists(programFolder + version);
+	if (!exists) exists = FileSystem.exists(fallbackProgramFolder + version);
+	return exists;
 }

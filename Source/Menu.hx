@@ -1,7 +1,9 @@
 package;
 
+import openfl.net.URLRequest;
+import openfl.Lib;
 import graphics.SideMenu;
-import graphics.Button;
+import haxe.ui.components.Button;
 import openfl.text.TextFormat;
 import openfl.text.TextField;
 import openfl.display.Sprite;
@@ -15,10 +17,6 @@ class Menu extends Sprite {
 
     public function new() {
         super();
-
-        app.window.height = 300;
-        app.window.width = 450;
-
 
         title = new TextField();
         title.text = "EZWorksheet Installer";
@@ -36,7 +34,7 @@ class Menu extends Sprite {
         description.y = 50;
         description.width = app.window.width - 150;
         description.height = 200;
-        description.defaultTextFormat = new TextFormat("_sans" , 12, 0xCAFFFFFF);
+        description.defaultTextFormat = new TextFormat("_sans" , 13, 0xCAFFFFFF);
         description.wordWrap = true;
         description.multiline = true;
         description.selectable = false;
@@ -47,26 +45,41 @@ class Menu extends Sprite {
 
         sidemenu = new SideMenu(100);
 
-        var installButton:Button = new Button("Install");
+        var installButton:Button = new Button();
+        installButton.text = "Install";
         installButton.width = 90;
+        installButton.height = 21;
         installButton.onClick = e -> {parent.addChild(new Installer()); parent.removeChild(this);};
         sidemenu.push(installButton);
-        var quickUpdate = new Button("Quick Update");
+        var quickUpdate = new Button();
+        quickUpdate.text = "Auto Update";
         quickUpdate.width = 90;
+        quickUpdate.height = 21;
+        quickUpdate.customStyle.fontSize = 8;
         quickUpdate.onClick = e -> {parent.addChild(new AutoUpdater()); parent.removeChild(this);};
         sidemenu.push(quickUpdate);
-        var updateButton:Button = new Button("Update");
+        var updateButton:Button = new Button();
+        updateButton.text = "Update";
         updateButton.width = 90;
+        updateButton.height = 21;
         sidemenu.push(updateButton);
-        var uninstallButton:Button = new Button("Uninstall");
+        var uninstallButton:Button = new Button();
+        uninstallButton.text = "Uninstall";
         uninstallButton.width = 90;
+        uninstallButton.height = 21;
         sidemenu.push(uninstallButton);
 
-        var exitButton:Button = new Button("Exit");
+        var exitButton:Button = new Button();
+        exitButton.text = "Exit";
         exitButton.width = 90;
+        exitButton.height = 21;
+        exitButton.onClick = e -> {Sys.exit(0);};
         sidemenu.pushBottom(exitButton);
-        var helpButton:Button = new Button("Help");
+        var helpButton:Button = new Button();
+        helpButton.text = "Help";
         helpButton.width = 90;
+        helpButton.height = 21;
+        helpButton.onClick = e -> {Lib.getURL(new URLRequest("http://ezworksheet.com/help.html"));};
         sidemenu.pushBottom(helpButton);
 
         addChild(sidemenu);

@@ -141,12 +141,13 @@ class Segment1 extends Sprite {
 			installer.FIX = hasProgram(version);
 			installer.VERSION = version;
 		};
+		dropdown.width = 110;
 
 		fixDescription = new TextField();
 		fixDescription.text = "This version is already installed. Proceed to fix your installation.";
-		fixDescription.x = 110;
+		fixDescription.x = 125;
 		fixDescription.y = dropdown.y;
-		fixDescription.width = app.window.width - 220;
+		fixDescription.width = 180;
 		fixDescription.height = 100;
 		fixDescription.defaultTextFormat = new TextFormat("_sans", 12, 0xCAFF0000);
 		fixDescription.wordWrap = true;
@@ -251,6 +252,8 @@ class Segment3 extends Sprite {
 			progressBar.graphics.beginFill(0x0FD623);
 			progressBar.graphics.drawRect(0, 0, e.bytesLoaded / e.bytesTotal * 200, 30);
 			progressBar.graphics.endFill();
+
+			trace(e.bytesLoaded / e.bytesTotal * 100);
 		});
 
 		request.addEventListener(ErrorEvent.ERROR, function(e:ErrorEvent) {
@@ -263,6 +266,7 @@ class Segment3 extends Sprite {
 			progressBar.graphics.endFill();
 
 			infoText.text = "Error: " + e.text + "Type: " + e.type;
+			trace(e.text);
 		});
 
 		request.addEventListener(Event.COMPLETE, function(e:Event) {

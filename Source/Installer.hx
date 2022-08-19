@@ -1,25 +1,22 @@
 package;
 
-import sys.io.File;
-import openfl.net.URLRequest;
-import Config.fallbackProgramFolder;
-import haxe.zip.Reader;
+import graphics.SideMenu;
+import haxe.Http;
 import haxe.io.BytesInput;
-import openfl.events.Event;
+import haxe.ui.components.Button;
+import haxe.ui.components.DropDown;
+import haxe.zip.Reader;
+import openfl.display.Shape;
+import openfl.display.Sprite;
 import openfl.events.ErrorEvent;
+import openfl.events.Event;
 import openfl.events.ProgressEvent;
 import openfl.net.URLLoaderDataFormat;
-import openfl.display.Shape;
-import haxe.Http;
-import sys.FileSystem;
-import Config.hasProgram;
-import Config.getVersionList;
-import haxe.ui.components.DropDown;
-import openfl.text.TextFormat;
+import openfl.net.URLRequest;
 import openfl.text.TextField;
-import haxe.ui.components.Button;
-import graphics.SideMenu;
-import openfl.display.Sprite;
+import openfl.text.TextFormat;
+import sys.FileSystem;
+import sys.io.File;
 
 class Installer extends Sprite {
 	var sidemenu:SideMenu;
@@ -31,7 +28,7 @@ class Installer extends Sprite {
 	public function new() {
 		super();
 
-		sidemenu = new SideMenu(100);
+		sidemenu = new SideMenu(115);
 
 		var exitButton:Button = new Button();
 		exitButton.text = "Exit";
@@ -196,7 +193,7 @@ class Segment2 extends Sprite {
 		title.width = title.textWidth + 4;
 
 		description = new TextField();
-		description.text = "To install the program to the default directory, just skip this step. Otherwise, choose the directory where you want to install the progra in. When installation ends, a folder will be created in the chosen directory, with the name of the version.";
+		description.text = "To install the program to the default directory, just skip this step. Otherwise, choose the directory where you want to install the program in. When installation ends, a folder will be created in the chosen directory, with the name of the version.";
 		description.x = 10;
 		description.y = 60;
 		description.width = app.window.width - 130;
@@ -237,122 +234,7 @@ class Segment3 extends Sprite {
 		s.y = app.window.height / 4 * 3 - s.height / 2;
 		addChild(s);
 		addChild(textField);
-		startInstallWithSaveAndBar(s, installer.VERSION, textField);
-	}
-
-	function startInstallWithSaveAndBar(progressBar:Shape, version:String, infoText:TextField) {
-		var request = new openfl.net.URLLoader();
-
-		request.dataFormat = URLLoaderDataFormat.BINARY;
-		request.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent) {
-			progressBar.graphics.clear();
-			progressBar.graphics.lineStyle(1, 0x000000);
-			progressBar.graphics.drawRect(0, 0, 200, 30);
-			progressBar.graphics.lineStyle(0);
-			progressBar.graphics.beginFill(0x0FD623);
-			progressBar.graphics.drawRect(0, 0, e.bytesLoaded / e.bytesTotal * 200, 30);
-			progressBar.graphics.endFill();
-
-			trace(e.bytesLoaded / e.bytesTotal * 100);
-		});
-
-		request.addEventListener(ErrorEvent.ERROR, function(e:ErrorEvent) {
-			progressBar.graphics.clear();
-			progressBar.graphics.lineStyle(1, 0x000000);
-			progressBar.graphics.drawRect(0, 0, 200, 30);
-			progressBar.graphics.lineStyle(0);
-			progressBar.graphics.beginFill(0xFF0000);
-			progressBar.graphics.drawRect(0, 0, 200, 10);
-			progressBar.graphics.endFill();
-
-			infoText.text = "Error: " + e.text + "Type: " + e.type;
-			trace(e.text);
-		});
-
-		request.addEventListener(Event.COMPLETE, function(e:Event) {
-			removeChild(progressBar);
-
-			infoText.text = 'Installing And Extracting\n\nversion $version...';
-			infoText.width = infoText.textWidth + 50;
-			infoText.height = 200;
-			infoText.defaultTextFormat = new TextFormat(null, null, null, null, null, null, null, null, CENTER);
-			infoText.multiline = true;
-			infoText.wordWrap = true;
-			// center the text
-			infoText.x = app.window.width / 2 - infoText.width / 2 - 50;
-			infoText.y = app.window.height / 2 - infoText.textHeight / 2;
-			// check for tests
-			if (Sys.args().contains("-test") || Main.TEST)
-				return;
-			var input = new BytesInput(request.data);
-			var reader = new Reader(input);
-			var entries = reader.read();
-			var writeFolder = programFolder;
-			try {
-				writeProgram(programFolder, entries);
-			} catch (e) {
-				infoText.text = '
-				Notice! you have the Windows setting Controlled Access enabled.
-				\n
-				\n 
-				The program will try to reinstall in this directory:
-				\n
-				\n + 
-				${Sys.getEnv("USERPROFILE")}';
-				infoText.width = app.window.width - 50;
-				infoText.height = infoText.textHeight;
-				// center the text
-				infoText.x = app.window.width / 2 - infoText.textWidth / 2 - 50;
-				infoText.y = app.window.height / 2 - infoText.textHeight / 2;
-
-				writeFolder = Sys.getEnv("USERPROFILE") + "\\EZWorksheet\\app\\";
-				writeProgram(Sys.getEnv("USERPROFILE") + "\\EZWorksheet\\app\\", entries);
-			}
-			infoText.text = 'Done! App Found at:\n\n' + writeFolder + version;
-			infoText.setTextFormat(new TextFormat(null, 12), 21, infoText.text.length);
-			// center the text
-			infoText.x = app.window.width / 2 - infoText.textWidth / 2;
-			infoText.y = app.window.height / 2 - infoText.textHeight / 2;
-		});
-
-		request.load(new URLRequest('${downloadLink}${Sys.systemName()}/${version}.zip'));
-	}
-
-	// create a function that recursively deletes a directory and all of its contents
-	function deleteDirectory(dir:String) {
-		var files = FileSystem.readDirectory(dir);
-		for (f in files) {
-			if (FileSystem.isDirectory(dir + "\\" + f)) {
-				deleteDirectory(dir + "\\" + f);
-				trace("Deleted " + dir + "\\" + f);
-			} else {
-				FileSystem.deleteFile(dir + "\\" + f);
-				trace("Deleted " + dir + "\\" + f);
-			}
-		}
-		FileSystem.deleteDirectory(dir);
-	}
-
-	function writeProgram(folder:String, entries:haxe.ds.List<haxe.zip.Entry>) {
-		for (entry in entries) {
-			var data = Reader.unzip(entry);
-			if (entry.fileName.substring(entry.fileName.lastIndexOf('/') + 1) == '' && entry.data.toString() == '') {
-				sys.FileSystem.createDirectory(folder + entry.fileName);
-				trace("Created directory " + entry.fileName);
-			} else {
-				var f = File.write(folder + entry.fileName, true);
-				f.write(data);
-				f.close();
-				trace("Created file " + entry.fileName);
-			}
-		}
-	}
-
-	function makeUserFolder(folder:String) {
-		if (folder.split('\\')[-2] != 'Users') {
-			return makeUserFolder(folder.substring(0, folder.lastIndexOf('\\')));
-		}
-		return folder;
+		startInstallWithSaveAndBar(s, installer.VERSION, textField, this.parent, this);
 	}
 }
 

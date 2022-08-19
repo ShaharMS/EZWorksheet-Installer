@@ -1,6 +1,7 @@
 package;
 
 
+import openfl.system.Capabilities;
 import sys.io.Process;
 import sys.io.File;
 import sys.FileSystem;
@@ -9,7 +10,7 @@ import openfl.text.TextFormat;
 import haxe.ui.Toolkit;
 class Main extends Sprite
 {
-	public static inline var TEST:Bool = true;
+	public static var TEST:Bool = false;
 
 	public static var mode(default, null):InstallerMode = MANUAL;
 
@@ -19,7 +20,15 @@ class Main extends Sprite
 	{
 		Toolkit.init();
 		Toolkit.theme = "dark";
-		this.stage.window.focus();
+		app.window.focus();
+		if (app.window.width != 410) {
+			app.window.width = 410;
+			app.window.height = 300;
+			var screenWidth = Capabilities.screenResolutionX;
+			var screenHeight = Capabilities.screenResolutionY;
+			app.window.x = Std.int((screenWidth - app.window.width) / 2);
+			app.window.y = Std.int((screenHeight - app.window.height) / 2);
+		}
 		if (!FileSystem.exists("/currentVersion.txt")) {
 			var handle = File.write(versionSave);
 			handle.writeString("N/A");
@@ -34,6 +43,7 @@ class Main extends Sprite
 				case "-firstInstall" | "-firstRun" | "-first": mode = INSTALL;
 				case "-uninstall": mode = UNINSTALL;
 				case "-regular" | "-manual": mode = MANUAL;
+				case "-test": TEST = true;
 			}
 		}
 		super();

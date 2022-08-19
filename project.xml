@@ -9,9 +9,8 @@
 	<source path="Source" />
 	
 	<haxelib name="openfl"/>
-	<haxelib name="haxeui-core"/>
+	<haxelib name="haxeui-core"/>	
 	<haxelib name="haxeui-openfl"/>
-	
 	<assets path="Assets" rename="assets"/>
 	<icon path="assets/preicon.ico"/>
 	

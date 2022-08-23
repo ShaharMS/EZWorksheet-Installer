@@ -1,5 +1,6 @@
 package;
 
+import openfl.Lib;
 import graphics.SideMenu;
 import haxe.Http;
 import haxe.io.BytesInput;
@@ -55,6 +56,7 @@ class Installer extends Sprite {
 		helpButton.text = "Help";
 		helpButton.width = 90;
 		helpButton.height = 21;
+		helpButton.onClick = e -> Lib.getURL(new URLRequest("ezworksheet.spacebubble.io/installer/help"));
 		sidemenu.pushBottom(helpButton);
 
 		addChild(sidemenu);
@@ -116,10 +118,12 @@ class Segment1 extends Sprite {
 		description.mouseEnabled = false;
 
 		dropdown = new DropDown();
-		getVersionList((array) -> {
-			for (string in array) {
-				dropdown.dataSource.add({text: string});
-			}
+		addEventListener(Event.ADDED_TO_STAGE, e -> {
+			getVersionList((array) -> {
+				for (string in array) {
+					dropdown.dataSource.add({text: string});
+				}
+			});
 		});
 		dropdown.x = 10;
 		dropdown.y = description.y + description.textHeight + 20;

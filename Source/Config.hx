@@ -23,11 +23,12 @@ final backgroundColor:Int = 0xFF333333;
 final fontColor:Int = 0xEEFFFFFF;
 final fontSize:Int = 14;
 final fontName:String = "_sans";
-final downloadLink:String = "https://spacebubble.io/apps/ezworksheet/program/";
-final appVersionLink:String = "https://spacebubble.io/apps/ezworksheet/api/version";
-final appVersionListLink:String = "https://spacebubble.io/apps/ezworksheet/api/versionList";
-final versionSave = "version.txt";
+final downloadLink:String = "https://ezworksheet.spacebubble.io/app/";
+final appVersionLink:String = "https://ezworksheet.spacebubble.io/api/version";
+final appVersionListLink:String = "https://ezworksheet.spacebubble.io/api/versionList";
+final installerVersionLink:String = "https://ezworksheet.spacebubble.io/api/installerVersion";
 final installerFolder = "installer";
+final version = "beta-1.0.0";
 
 final programFolder = switch Sys.systemName() {
 	case "Windows": getWindowsDocumentsFolder() + "\\EZWorksheet\\app\\";

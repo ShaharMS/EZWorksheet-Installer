@@ -1,5 +1,6 @@
 package;
 
+import openfl.events.Event;
 import haxe.Http;
 import haxe.Timer;
 import openfl.display.Shape;
@@ -53,18 +54,18 @@ class Updater extends Sprite {
 					addChild(s);
 
 					startInstallWithSaveAndBar(s, data, titleField, this.parent, this);
-				} else
+				} else {
 					titleField.text = "You Are Up To Date :)";
-				Timer.delay(() -> {
-					if (Main.TEST) {
-						parent.addChild(new Main());
-						parent.removeChild(this);
-					} else
-						Sys.exit(0);
-				}, 2000);
+					Timer.delay(() -> {
+						if (Main.TEST) {
+							parent.addChild(new Menu());
+							parent.removeChild(this);
+						} else
+							Sys.exit(0);
+					}, 2000);
+				}
 			}, 500);
 		}
-
-		httpReq.request();
+		addEventListener(Event.ADDED_TO_STAGE, e -> httpReq.request());
 	}
 }

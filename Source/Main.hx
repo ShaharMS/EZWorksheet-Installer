@@ -9,7 +9,7 @@ import sys.io.File;
 import sys.io.Process;
 
 class Main extends Sprite {
-	public static var TEST:Bool = true;
+	public static var TEST:Bool = false;
 	public static var mode(default, null):InstallerMode = MANUAL;
 
 	public static final textFormat:TextFormat = new TextFormat(fontName, fontSize, fontColor);
@@ -25,11 +25,6 @@ class Main extends Sprite {
 			var screenHeight = Capabilities.screenResolutionY;
 			app.window.x = Std.int((screenWidth - app.window.width) / 2);
 			app.window.y = Std.int((screenHeight - app.window.height) / 2);
-		}
-		if (!FileSystem.exists("/currentVersion.txt")) {
-			var handle = File.write(versionSave);
-			handle.writeString("N/A");
-			handle.close();
 		}
 
 		final args = Sys.args();

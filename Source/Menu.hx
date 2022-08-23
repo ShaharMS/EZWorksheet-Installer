@@ -1,5 +1,9 @@
 package;
 
+import openfl.ui.Mouse;
+import openfl.events.MouseEvent;
+import openfl.events.Event;
+import haxe.Http;
 import openfl.net.URLRequest;
 import openfl.Lib;
 import graphics.SideMenu;
@@ -39,9 +43,33 @@ class Menu extends Sprite {
         description.multiline = true;
         description.selectable = false;
         description.mouseEnabled = false;
+		addChild(title);
+		addChild(description);
 
-        addChild(title);
-        addChild(description);
+        var desc2 = new TextField();
+        desc2.text = "A New Version Of The Installer Is Available.\nClick This Text To Update";
+        desc2.defaultTextFormat = new TextFormat("_sans", 12, 0x00EEFF, true, false, false, null , null, "center");
+        desc2.width = app.window.width - 115 - 25;
+        desc2.x = 10;
+        desc2.height = desc2.textHeight + 4;
+        desc2.y = app.window.height - 70;
+        desc2.visible = false;
+        desc2.wordWrap = true;
+        desc2.multiline = true;
+		desc2.addEventListener(MouseEvent.CLICK, e -> Lib.getURL(new URLRequest("https://ezworksheet.spacebubble.io/installer/download")));
+        desc2.addEventListener(MouseEvent.MOUSE_OVER, e -> Mouse.cursor = BUTTON);
+		desc2.addEventListener(MouseEvent.MOUSE_OUT, e -> Mouse.cursor = AUTO);
+        addChild(desc2);
+
+		var httpReq = new Http(installerVersionLink);
+		httpReq.onData = (data:String) -> {
+			if (data != version) {
+                desc2.visible = true;
+                desc2.text += ' (version: $data)';
+            }
+            trace(data);
+		};
+        httpReq.onError = (e) -> trace(e);
 
         sidemenu = new SideMenu(115);
 
@@ -55,7 +83,6 @@ class Menu extends Sprite {
         updateButton.text = "Update";
         updateButton.width = 105;
         updateButton.height = 21;
-        //quickUpdate.customStyle.fontSize = 8;
         updateButton.onClick = e -> {parent.addChild(new Updater()); parent.removeChild(this);};
         sidemenu.push(updateButton);
         var uninstallButton:Button = new Button();
@@ -74,12 +101,12 @@ class Menu extends Sprite {
         helpButton.text = "Help";
         helpButton.width = 105;
         helpButton.height = 21;
-        helpButton.onClick = e -> {Lib.getURL(new URLRequest("http://ezworksheet.com/help.html"));};
+        helpButton.onClick = e -> {Lib.getURL(new URLRequest("https://ezworksheet.spacebubble.io/installer/help"));};
         sidemenu.pushBottom(helpButton);
 
         addChild(sidemenu);
 
-        
+		addEventListener(Event.ADDED_TO_STAGE, e -> httpReq.request());
 
     }
 }

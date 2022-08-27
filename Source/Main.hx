@@ -9,7 +9,7 @@ import sys.io.File;
 import sys.io.Process;
 
 class Main extends Sprite {
-	public static var TEST:Bool = false;
+	public static var TEST:Bool = true;
 	public static var mode(default, null):InstallerMode = MANUAL;
 
 	public static final textFormat:TextFormat = new TextFormat(fontName, fontSize, fontColor);

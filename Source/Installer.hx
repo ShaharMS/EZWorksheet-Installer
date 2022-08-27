@@ -214,9 +214,15 @@ class Segment2 extends Sprite {
 		path.y = description.y + description.textHeight + 20;
 		path.width = app.window.width - 130;
 		path.verticalAlign = "center";
-		path.onChange = e -> {
-			installer.CUSTOM_PATH = path.text != programFolder ? path.text : "";
-		};
+		path.onClick = e -> {
+			var f = new openfl.filesystem.File();
+			f.browseForDirectory("Select Installation Directory");
+			f.addEventListener(Event.SELECT, (ev) -> {
+				trace(f.nativePath, f.name);
+				path.text = f.nativePath;
+				installer.CUSTOM_PATH = path.text != programFolder ? path.text : "";
+			});
+		}
 
 		addChild(title);
 		addChild(description);

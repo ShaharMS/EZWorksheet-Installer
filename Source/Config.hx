@@ -31,25 +31,16 @@ final installerFolder = "installer";
 final version = "beta-1.0.0";
 
 final programFolder = switch Sys.systemName() {
-	case "Windows": getWindowsDocumentsFolder() + "\\EZWorksheet\\app\\";
-	case "Mac": Sys.getEnv("$HOME") + "/Documents/EZWorksheet/app/";
-	case "Linux": "~/.local/share/EZWorksheet/app/";
-	default: throw new UnknownSystemException();
+	case "Windows": openfl.filesystem.File.documentsDirectory.nativePath + "\\EZWorksheet\\app\\";
+	default: openfl.filesystem.File.documentsDirectory.nativePath + "/EZWorksheet/app/";
 };
 
 final fallbackProgramFolder = switch Sys.systemName() {
-	case "Windows": Sys.getEnv("USERPROFILE") + "\\EZWorksheet\\app\\";
-	case "Mac": Sys.getEnv("$HOME") + "/Documents/EZWorksheet/app/";
-	case "Linux": "~/.local/share/EZWorksheet/app/";
-	default: throw new UnknownSystemException();
+	case "Windows": openfl.filesystem.File.userDirectory.nativePath + "\\EZWorksheet\\app\\";
+	default: openfl.filesystem.File.userDirectory.nativePath + "/EZWorksheet/app/";
 };
 
-final fallbackWithoutPostfix = switch Sys.systemName() {
-	case "Windows": Sys.getEnv("USERPROFILE");
-	case "Mac": Sys.getEnv("$HOME");
-	case "Linux": "~/.local/share/";
-	default: throw new UnknownSystemException();
-};
+final fallbackWithoutPostfix:String = openfl.filesystem.File.userDirectory.nativePath;
 
 function getWindowsDocumentsFolder() {
 	#if windows

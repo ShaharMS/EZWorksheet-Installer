@@ -33,7 +33,7 @@ class Installer extends Sprite {
 
 		var exitButton:Button = new Button();
 		exitButton.text = "Exit";
-		exitButton.width = 90;
+		exitButton.width = 105;
 		exitButton.height = 21;
 		exitButton.onClick = e -> {
 			parent.addChild(new Menu());
@@ -42,19 +42,19 @@ class Installer extends Sprite {
 		sidemenu.pushBottom(exitButton);
 		var nextButton:Button = new Button();
 		nextButton.text = "Next >";
-		nextButton.width = 90;
+		nextButton.width = 105;
 		nextButton.height = 21;
 		nextButton.onClick = e -> moveForward();
 		sidemenu.pushBottom(nextButton);
 		var backButton:Button = new Button();
 		backButton.text = "< Back";
-		backButton.width = 90;
+		backButton.width = 105;
 		backButton.height = 21;
 		backButton.onClick = e -> moveBackwards();
 		sidemenu.pushBottom(backButton);
 		var helpButton:Button = new Button();
 		helpButton.text = "Help";
-		helpButton.width = 90;
+		helpButton.width = 105;
 		helpButton.height = 21;
 		helpButton.onClick = e -> Lib.getURL(new URLRequest("ezworksheet.spacebubble.io/installer/help"));
 		sidemenu.pushBottom(helpButton);
@@ -216,12 +216,12 @@ class Segment2 extends Sprite {
 		path.verticalAlign = "center";
 		path.onClick = e -> {
 			var f = new openfl.filesystem.File();
-			f.browseForDirectory("Select Installation Directory");
 			f.addEventListener(Event.SELECT, (ev) -> {
 				trace(f.nativePath, f.name);
 				path.text = f.nativePath;
 				installer.CUSTOM_PATH = path.text != programFolder ? path.text : "";
 			});
+			f.browseForDirectory("Select Installation Directory");
 		}
 
 		addChild(title);

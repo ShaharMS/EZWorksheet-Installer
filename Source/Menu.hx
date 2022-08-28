@@ -89,6 +89,7 @@ class Menu extends Sprite {
         uninstallButton.text = "Uninstall";
         uninstallButton.width = 105;
         uninstallButton.height = 21;
+        uninstallButton.onClick = e -> {parent.addChild(new UnInstaller()); parent.removeChild(this);};
         sidemenu.push(uninstallButton);
 
         var exitButton:Button = new Button();

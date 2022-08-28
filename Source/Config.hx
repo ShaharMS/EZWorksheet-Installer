@@ -42,14 +42,6 @@ final fallbackProgramFolder = switch Sys.systemName() {
 
 final fallbackWithoutPostfix:String = openfl.filesystem.File.userDirectory.nativePath;
 
-function getWindowsDocumentsFolder() {
-	#if windows
-	var p = new Process("powershell", ["[Environment]::GetFolderPath(\"MyDocuments\")"]);
-	return '${p.stdout.readLine()}';
-	#end
-	return "";
-}
-
 function getVersionList(callback:(Array<String>) -> Void) {
 	var httpreq = new Http(appVersionListLink);
 
@@ -181,4 +173,19 @@ function makeUserFolder(folder:String) {
 		return makeUserFolder(folder.substring(0, folder.lastIndexOf('\\')));
 	}
 	return folder;
+}
+
+function getInstalledVersions() {
+	var files:Array<String> = [];
+	//first. check if the program is installed in the default program directory
+	try {
+		files = FileSystem.readDirectory(programFolder);
+	} catch (e) {
+		trace("Unable to find versions in " + programFolder + ": " + e.message);
+		try {
+			files = FileSystem.readDirectory(fallbackProgramFolder);
+		} catch (e) trace("Unable to find versions in " + programFolder + ": " + e.message);
+	}
+	return files;
+	
 }

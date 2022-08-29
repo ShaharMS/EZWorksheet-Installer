@@ -12,5 +12,7 @@ import Config.fallbackProgramFolder;
 import Config.fallbackWithoutPostfix;
 import Config.startInstallWithSaveAndBar;
 import Config.installerVersionLink;
+import Config.getInstalledVersions;
+import Config.executableName;
 import openfl.Lib.application as app;
 import Config.SIDEBAR_WIDTH;

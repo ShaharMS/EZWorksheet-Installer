@@ -1,5 +1,11 @@
 package;
 
+import sys.thread.Thread;
+import sys.FileSystem;
+import sys.io.File;
+import haxe.MainLoop;
+import sys.io.Process;
+import haxe.ui.components.DropDown;
 import openfl.ui.Mouse;
 import openfl.events.MouseEvent;
 import openfl.events.Event;
@@ -18,6 +24,8 @@ class Menu extends Sprite {
     var description:TextField;
     var desc2:TextField;
     var sidemenu:SideMenu;
+    var versionDropdown:DropDown;
+    var launch:Button;
 
     public function new() {
         super();
@@ -27,19 +35,21 @@ class Menu extends Sprite {
         title.x = 10;
         title.y = 10;
         title.defaultTextFormat = new TextFormat("_sans" , 24, 0xCAFFFFFF, true);
-        title.width = title.textWidth + 4;
+		title.width = app.window.width - SIDEBAR_WIDTH - 10;
+		title.height = title.textHeight + 4;
         title.wordWrap = true;
         title.multiline = true;
 
         description = new TextField();
         description.text = "Welcome to the EZWorksheet installer!\n\n" +
             "If its your first time around, thank you for installing EZWorksheet:)\n\n" +
-            "To continue, please choose an option from the side menu.";
+            "To continue, please choose an option from the side menu.\n\n" + 
+            "To launch the app, choose a version from the dropdown below, and press \"Launch\"";
 
         description.x = 10;
-        description.y = 50;
-        description.width = app.window.width - SIDEBAR_WIDTH - 35;
-        description.height = 200;
+		description.y = title.y + title.height;
+		description.width = app.window.width - SIDEBAR_WIDTH - 10;
+		description.height = description.textHeight + 40;
         description.defaultTextFormat = new TextFormat("_sans" , 13, 0xCAFFFFFF);
         description.wordWrap = true;
         description.multiline = true;
@@ -47,6 +57,49 @@ class Menu extends Sprite {
         description.mouseEnabled = false;
 		addChild(title);
 		addChild(description);
+
+        versionDropdown = new DropDown();
+		for (version in getInstalledVersions()) {
+			versionDropdown.dataSource.add({text: version});
+		}
+        versionDropdown.y = description.y + description.height + 30;
+        versionDropdown.x = 10;
+        versionDropdown.width = 110;
+        versionDropdown.height = 30;
+        addChild(versionDropdown);
+        launch = new Button();
+        launch.text = 'Launch';
+        launch.verticalAlign = "center";
+        launch.x = 125;
+        launch.y = versionDropdown.y;
+		launch.height = versionDropdown.height != 0 ? versionDropdown.height : 30;
+        launch.onClick = e -> {
+            Thread.create(() -> {
+			    try {
+                    
+					trace(programFolder + versionDropdown.selectedItem.text);
+					FileSystem.readDirectory(programFolder + versionDropdown.selectedItem.text + "\\" + executableName);
+                    Sys.setCwd(programFolder + versionDropdown.selectedItem.text);
+                    trace(Sys.getCwd());
+				    var process = new Process("./" + executableName, []);
+					var exitCode = process.exitCode();
+                    var handle = File.write("log.txt", false);
+					handle.writeString(process.stderr.readAll().toString() + "\n\n\n\n====\n\n\n\n" + process.stdout.readAll().toString());
+                    handle.close();
+			    } catch (e) {
+					try {
+						trace(fallbackProgramFolder + versionDropdown.selectedItem.text + "\\" + executableName);
+                        Sys.setCwd(fallbackProgramFolder + versionDropdown.selectedItem.text);
+						var process = new Process("./" + executableName, []);
+						var exitCode = process.exitCode();
+                        trace(exitCode);
+						var handle = File.write("log.txt", false);
+						handle.writeString(process.stderr.readAll().toString() + "\n\n\n\n====\n\n\n\n" + process.stdout.readAll().toString());
+					} catch (e) {trace(e);}
+                }
+            });
+        }
+        addChild(launch);
 
         desc2 = new TextField();
         desc2.text = "A New Version Of The Installer Is Available.\nClick This Link To Update";
@@ -58,7 +111,7 @@ class Menu extends Sprite {
         desc2.visible = false;
         desc2.wordWrap = true;
         desc2.multiline = true;
-		desc2.addEventListener(MouseEvent.CLICK, e -> Lib.getURL(new URLRequest("https://ezworksheet.spacebubble.io/installer/download")));
+		desc2.addEventListener(MouseEvent.CLICK, e -> Lib.getURL(new URLRequest("https://ezworksheet.spacebubble.io/")));
         desc2.addEventListener(MouseEvent.MOUSE_OVER, e -> Mouse.cursor = BUTTON);
 		desc2.addEventListener(MouseEvent.MOUSE_OUT, e -> Mouse.cursor = AUTO);
         addChild(desc2);
@@ -80,7 +133,7 @@ class Menu extends Sprite {
         installButton.width = SIDEBAR_WIDTH - 10;
         installButton.height = 21;
         installButton.onClick = e -> {
-            app.window.onResize.removeAll(); 
+			app.window.onResize.remove(reposition); 
             parent.addChild(new Installer()); 
             parent.removeChild(this);};
 
@@ -91,7 +144,7 @@ class Menu extends Sprite {
         updateButton.width = SIDEBAR_WIDTH - 10;
         updateButton.height = 21;
         updateButton.onClick = e -> {
-            app.window.onResize.removeAll(); 
+			app.window.onResize.remove(reposition); 
             parent.addChild(new Updater()); 
             parent.removeChild(this);};
 
@@ -102,7 +155,7 @@ class Menu extends Sprite {
         uninstallButton.width = SIDEBAR_WIDTH - 10;
         uninstallButton.height = 21;
         uninstallButton.onClick = e -> {
-            app.window.onResize.removeAll(); 
+            app.window.onResize.remove(reposition); 
             parent.addChild(new UnInstaller()); 
             parent.removeChild(this);};
             
@@ -144,5 +197,10 @@ class Menu extends Sprite {
 		desc2.width = w - SIDEBAR_WIDTH - 25;
 		desc2.height = desc2.textHeight + 4;
 		desc2.y = Math.max(h - 70, description.y + description.height);
+
+		versionDropdown.y = description.y + description.height + 30;
+		versionDropdown.width = 110;
+		launch.y = versionDropdown.y;
+		launch.height = versionDropdown.height != 0 ? versionDropdown.height : 30;
     }
 }

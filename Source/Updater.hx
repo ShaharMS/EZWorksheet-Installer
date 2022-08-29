@@ -57,7 +57,7 @@ class Updater extends Sprite {
 				} else {
 					titleField.text = "You Are Up To Date :)";
 					Timer.delay(() -> {
-						if (Main.TEST) {
+						if (Main.TEST || !Sys.args().contains("-autoUpdate") || !Sys.args().contains("-update")) {
 							parent.addChild(new Menu());
 							parent.removeChild(this);
 						} else
@@ -67,5 +67,6 @@ class Updater extends Sprite {
 			}, 500);
 		}
 		addEventListener(Event.ADDED_TO_STAGE, e -> httpReq.request());
+		
 	}
 }

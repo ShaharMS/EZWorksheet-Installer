@@ -1,5 +1,6 @@
 package;
 
+import Config.uninstallVersions;
 import haxe.MainLoop;
 import haxe.ui.components.CheckBox;
 import haxe.ui.containers.HBox;
@@ -23,6 +24,7 @@ import openfl.text.TextField;
 import openfl.text.TextFormat;
 import sys.FileSystem;
 import sys.io.File;
+using StringTools;
 
 class UnInstaller extends Sprite {
 	var sidemenu:SideMenu;
@@ -35,7 +37,7 @@ class UnInstaller extends Sprite {
 		sidemenu = new SideMenu(SIDEBAR_WIDTH);
 
 		var exitButton:Button = new Button();
-		exitButton.text = "Exit";
+		exitButton.text = "Menu";
 		exitButton.width = SIDEBAR_WIDTH - 10;
 		exitButton.height = 21;
 		exitButton.onClick = e -> {
@@ -128,9 +130,10 @@ class USegment1 extends Sprite {
 		for (version in getInstalledVersions()) {
 			var checkbox = new CheckBox();
 			checkbox.text = version;
+			if (uninstaller.VERSIONS.contains(version)) checkbox.selected = true;
 			checkbox.onChange = e -> {
 				if (checkbox.selected) uninstaller.VERSIONS.push(version);
-				else uninstaller.VERSIONS.remove(version);
+				else uninstaller.VERSIONS.remove(version);		
 			}
 			hbox.addComponent(checkbox);
 		}
@@ -146,13 +149,34 @@ class USegment1 extends Sprite {
 }
 
 class USegment2 extends Sprite {
-	var title:TextField;
-	var description:TextField;
-	var path:haxe.ui.components.TextField;
+	var infoText:TextField;
 
-	public function new(installer:UnInstaller) {
+	public function new(uninstaller:UnInstaller) {
 		super();
-		name = "Seg2";
+		infoText = new TextField();
+		infoText.defaultTextFormat = new TextFormat("_sans", 14, 0xCAFFFFFF, null, null, null, null, null, "center");
+		infoText.text = "Starting removal of version " + uninstaller.VERSIONS[0];
+		addChild(infoText);
+		app.window.onResize.add(reposition);
+		uninstallVersions(uninstaller.VERSIONS, (ver) -> {
+			infoText.text = "Starting removal of version " + ver;
+			reposition(app.window.width, app.window.height);
+		}, (file) -> {
+			infoText.text = "Deleting " + file;
+			reposition(app.window.width, app.window.height);
+		}, (e) -> {
+			infoText.text = "Error: " + e.message;
+		});
+		var versions = uninstaller.VERSIONS.toString();
+		infoText.text = "Done!\n\nUninstalled Versions:\n\n" + versions.substring(1, versions.length - 1).replace(",", ", ");
+		reposition(app.window.width, app.window.height);
+	}
+
+	function reposition(w:Int, h:Float) {
+		infoText.width = infoText.textWidth + 4;
+		infoText.height = infoText.textHeight + 4;
+		infoText.x = w / 2 - infoText.width / 2 - SIDEBAR_WIDTH / 2;
+		infoText.y = h / 2 - infoText.height / 2;
 	}
 }
 

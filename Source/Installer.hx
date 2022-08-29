@@ -32,7 +32,7 @@ class Installer extends Sprite {
 		sidemenu = new SideMenu(SIDEBAR_WIDTH);
 
 		var exitButton:Button = new Button();
-		exitButton.text = "Exit";
+		exitButton.text = "Menu";
 		exitButton.width = SIDEBAR_WIDTH - 10;
 		exitButton.height = 21;
 		exitButton.onClick = e -> {
@@ -63,25 +63,25 @@ class Installer extends Sprite {
 		addChild(new Segment1(this));
 	}
 
-	public function moveForward() {
+	public inline function moveForward() {
 		if (currentSeg >= 4) return;
 		currentSeg++;
 		switch currentSeg {
-			case 1: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment1(this));}
-			case 2: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment2(this));}
-			case 3: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment3(this));}
-			case 4: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment4(this));}
+			case 1: {removeChildren(); addChild(sidemenu); addChild(new Segment1(this));}
+			case 2: {removeChildren(); addChild(sidemenu); addChild(new Segment2(this));}
+			case 3: {removeChildren(); addChild(sidemenu); addChild(new Segment3(this));}
+			case 4: {removeChildren(); addChild(sidemenu); addChild(new Segment4(this));}
 		}
 	}
 
-	public function moveBackwards() {
+	public inline function moveBackwards() {
 		if (currentSeg <= 1) return;
 		currentSeg--;
 		switch currentSeg {
-			case 1: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment1(this));}
-			case 2: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment2(this));}
-			case 3: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment3(this));}
-			case 4: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment4(this));}
+			case 1: {removeChildren(); addChild(sidemenu); addChild(new Segment1(this));}
+			case 2: {removeChildren(); addChild(sidemenu); addChild(new Segment2(this));}
+			case 3: {removeChildren(); addChild(sidemenu); addChild(new Segment3(this));}
+			case 4: {removeChildren(); addChild(sidemenu); addChild(new Segment4(this));}
 		}
 	}
 }
@@ -151,7 +151,7 @@ class Segment1 extends Sprite {
 		fixDescription = new TextField();
 		fixDescription.text = "This version is already installed. Proceed to fix your installation.";
 		fixDescription.x = 125;
-		fixDescription.y = dropdown.y;
+		fixDescription.y = dropdown.y - 2;
 		fixDescription.width = 180;
 		fixDescription.height = 100;
 		fixDescription.defaultTextFormat = new TextFormat("_sans", 12, 0xCAFF0000);
@@ -191,14 +191,14 @@ class Segment1 extends Sprite {
 		description.height = description.textHeight + 4;
 
 		dropdown.y = description.y + description.textHeight + 20;
-		dropdown.width = Math.min(110, w - SIDEBAR_WIDTH - 10);
+		dropdown.width = 110;
 
-		fixDescription.x = Math.min(110, w - SIDEBAR_WIDTH - 10) + 15;
-		fixDescription.y = dropdown.y;
-		fixDescription.width = Math.max(180, w - SIDEBAR_WIDTH - dropdown.x - fixDescription.width);
+		fixDescription.x = 125;
+		fixDescription.y = dropdown.y - 2;
+		fixDescription.width = Math.min(180, w - 125 - SIDEBAR_WIDTH - 10);
 		fixDescription.height = fixDescription.textHeight + 4;
 
-		verDescription.y = dropdown.y + 40;
+		verDescription.y = fixDescription.y + fixDescription.height + 10;
 		verDescription.width = w - SIDEBAR_WIDTH - 10;
 		verDescription.height = verDescription.textHeight + 4;
 	}
@@ -290,8 +290,10 @@ class Segment3 extends Sprite {
 		s.y = app.window.height / 4 * 3 - s.height / 2;
 		addChild(s);
 		addChild(textField);
-		addEventListener(Event.ADDED_TO_STAGE, e -> startInstallWithSaveAndBar(s, installer.VERSION, textField, this.parent, this));
-	
+		addEventListener(Event.ADDED_TO_STAGE, e -> {
+			startInstallWithSaveAndBar(s, installer.VERSION, textField, this.parent, this);
+			textField.x -= SIDEBAR_WIDTH / 2;
+		});
 		app.window.onResize.add(reposition);
 	}
 

@@ -1,5 +1,6 @@
 package;
 
+import openfl.display.StageScaleMode;
 import haxe.ui.Toolkit;
 import openfl.display.Sprite;
 import openfl.system.Capabilities;
@@ -20,7 +21,7 @@ class Main extends Sprite {
 		app.window.focus();
 		if (app.window.width != 500) {
 			app.window.width = 500;
-			app.window.height = 300;
+			app.window.height = 400;
 			var screenWidth = Capabilities.screenResolutionX;
 			var screenHeight = Capabilities.screenResolutionY;
 			app.window.x = Std.int((screenWidth - app.window.width) / 2);

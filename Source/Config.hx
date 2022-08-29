@@ -1,5 +1,7 @@
 package;
 
+import openfl.desktop.NativeProcess;
+import openfl.desktop.NativeProcessStartupInfo;
 import haxe.Exception;
 import openfl.display.DisplayObjectContainer;
 import sys.io.File;
@@ -20,6 +22,8 @@ import sys.io.Process;
 import exceptions.UnknownSystemException;
 using StringTools;
 
+import openfl.filesystem.File as OFLFile;
+
 #if (haxe_ver < "4.2.0")
 class Config {
 #end
@@ -32,10 +36,15 @@ class Config {
 #if (haxe_ver < "4.2.0") public static #end final appVersionListLink:String = "https://ezworksheet.spacebubble.io/api/versionList";
 #if (haxe_ver < "4.2.0") public static #end final installerVersionLink:String = "https://ezworksheet.spacebubble.io/api/installerVersion";
 #if (haxe_ver < "4.2.0") public static #end final installerFolder = "installer";
-#if (haxe_ver < "4.2.0") public static #end final version = "beta-1.0.0";
+#if (haxe_ver < "4.2.0") public static #end final version = "beta-1.0.0"; 
 #if (haxe_ver < "4.2.0") public static #end final SIDEBAR_WIDTH = 115;
 
-
+#if (haxe_ver < "4.2.0") public static #end final executableName = "EZWorksheet" + switch Sys.systemName() {
+	case "Windows": ".exe";
+	case "Mac": ".dmg";
+	case "Linux": "";
+	default: "";
+};
 #if (haxe_ver < "4.2.0") public static #end final programFolder = switch Sys.systemName() {
 	case "Windows": openfl.filesystem.File.documentsDirectory.nativePath + "\\EZWorksheet\\app\\";
 	default: openfl.filesystem.File.documentsDirectory.nativePath + "/EZWorksheet/app/";
@@ -135,10 +144,12 @@ class Config {
 			writeProgram(fallbackProgramFolder, entries);
 		}
 		infoText.text = 'Done! App Found at:\n\n' + writeFolder + version;
+		infoText.width = infoText.textWidth + 4;
+		infoText.height = infoText.textHeight + 4;
 		infoText.setTextFormat(new TextFormat(null, 12), 21, infoText.text.length);
 		// center the text
-		infoText.x = app.window.width / 2 - infoText.textWidth / 2;
-		infoText.y = app.window.height / 2 - infoText.textHeight / 2;
+		infoText.x = app.window.width / 2 - infoText.width / 2;
+		infoText.y = app.window.height / 2 - infoText.height / 2;
 	});
 
 	request.load(new URLRequest('${downloadLink}${Sys.systemName()}/${version}.zip'));
@@ -184,10 +195,10 @@ class Config {
 #if (haxe_ver < "4.2.0") public static #end function getInstalledVersions() {
 	var files:Array<String> = [];
 	//first. check if the program is installed in the default program directory
-	try {
+	if (FileSystem.isDirectory(programFolder)) {
 		files = FileSystem.readDirectory(programFolder);
-	} catch (e) {
-		trace("Unable to find versions in " + programFolder + ": (" + e.message + ") - Using fallback directory: " + fallbackProgramFolder);
+	} else {
+		trace("Unable to find versions in " + programFolder + ": - Using fallback directory: " + fallbackProgramFolder);
 		try {
 			files = FileSystem.readDirectory(fallbackProgramFolder);
 		} catch (e) trace("Unable to find versions in " + programFolder + ": " + e.message);
@@ -209,6 +220,7 @@ class Config {
 		try {
 			var directory = FileSystem.readDirectory(fallbackProgramFolder);
 			for (folder in directory) {
+				trace(folder);
 				if (!versions.contains(folder))
 					continue;
 				deleteDirectory(fallbackProgramFolder + folder, onRemovedFile, onRemovedFile);
@@ -217,6 +229,26 @@ class Config {
 		} catch (e) {
 			onError(e);
 		}
+	}
+}
+	#if (haxe_ver < "4.2.0") public static #end function createDesktopShrotcut(target:OFLFile, shortcut:OFLFile) {
+	if (NativeProcess.isSupported) { // Note: this is only true under extendedDesktop profile
+		var shortcutInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
+
+		// Location of the Windows Scripting Host executable
+			shortcutInfo.executable = new OFLFile("C:/Windows/System32/wscript.exe");
+
+		// Argument 1: script to execute
+			shortcutInfo.arguments.push(OFLFile.applicationDirectory.resolvePath("utils/mkshortcut.js").nativePath);
+
+		// Argument 2: target
+		shortcutInfo.arguments.push("/target:" + target.nativePath);
+
+		// Argument 3: shortcut
+		shortcutInfo.arguments.push("/shortcut:" + shortcut.nativePath);
+
+		var mkShortcutProcess = new NativeProcess();
+		mkShortcutProcess.start(shortcutInfo);
 	}
 }
 #if (haxe_ver < "4.2.0")

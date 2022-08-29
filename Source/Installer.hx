@@ -189,19 +189,15 @@ class Segment1 extends Sprite {
 		description.y = Math.max(title.y + title.height, 60);
 		description.width = w - SIDEBAR_WIDTH - 10;
 		description.height = description.textHeight + 4;
-		dropdown = new DropDown();
 
-		//removeChild(dropdown);
-		//removeChild(fixDescription);
 		dropdown.y = description.y + description.textHeight + 20;
-		dropdown.width = Math.min(110, w - SIDEBAR_WIDTH - 10) + 10;
+		dropdown.width = Math.min(110, w - SIDEBAR_WIDTH - 10);
 
 		fixDescription.x = Math.min(110, w - SIDEBAR_WIDTH - 10) + 15;
 		fixDescription.y = dropdown.y;
 		fixDescription.width = Math.max(180, w - SIDEBAR_WIDTH - dropdown.x - fixDescription.width);
 		fixDescription.height = fixDescription.textHeight + 4;
-		//addChild(dropdown);
-		//addChild(fixDescription);
+
 		verDescription.y = dropdown.y + 40;
 		verDescription.width = w - SIDEBAR_WIDTH - 10;
 		verDescription.height = verDescription.textHeight + 4;

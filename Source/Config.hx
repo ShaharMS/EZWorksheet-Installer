@@ -20,32 +20,35 @@ import sys.io.Process;
 import exceptions.UnknownSystemException;
 using StringTools;
 
-final backgroundColor:Int = 0xFF333333;
-final fontColor:Int = 0xEEFFFFFF;
-final fontSize:Int = 14;
-final fontName:String = "_sans";
-final downloadLink:String = "https://ezworksheet.spacebubble.io/app/";
-final appVersionLink:String = "https://ezworksheet.spacebubble.io/api/version";
-final appVersionListLink:String = "https://ezworksheet.spacebubble.io/api/versionList";
-final installerVersionLink:String = "https://ezworksheet.spacebubble.io/api/installerVersion";
-final installerFolder = "installer";
-final version = "beta-1.0.0";
-final SIDEBAR_WIDTH = 115;
+#if (haxe_ver < "4.2.0")
+class Config {
+#end
+#if (haxe_ver < "4.2.0") public static #end final backgroundColor:Int = 0xFF333333;
+#if (haxe_ver < "4.2.0") public static #end final fontColor:Int = 0xEEFFFFFF;
+#if (haxe_ver < "4.2.0") public static #end final fontSize:Int = 14;
+#if (haxe_ver < "4.2.0") public static #end final fontName:String = "_sans";
+#if (haxe_ver < "4.2.0") public static #end final downloadLink:String = "https://ezworksheet.spacebubble.io/app/";
+#if (haxe_ver < "4.2.0") public static #end final appVersionLink:String = "https://ezworksheet.spacebubble.io/api/version";
+#if (haxe_ver < "4.2.0") public static #end final appVersionListLink:String = "https://ezworksheet.spacebubble.io/api/versionList";
+#if (haxe_ver < "4.2.0") public static #end final installerVersionLink:String = "https://ezworksheet.spacebubble.io/api/installerVersion";
+#if (haxe_ver < "4.2.0") public static #end final installerFolder = "installer";
+#if (haxe_ver < "4.2.0") public static #end final version = "beta-1.0.0";
+#if (haxe_ver < "4.2.0") public static #end final SIDEBAR_WIDTH = 115;
 
 
-final programFolder = switch Sys.systemName() {
+#if (haxe_ver < "4.2.0") public static #end final programFolder = switch Sys.systemName() {
 	case "Windows": openfl.filesystem.File.documentsDirectory.nativePath + "\\EZWorksheet\\app\\";
 	default: openfl.filesystem.File.documentsDirectory.nativePath + "/EZWorksheet/app/";
 };
 
-final fallbackProgramFolder = switch Sys.systemName() {
+#if (haxe_ver < "4.2.0") public static #end final fallbackProgramFolder = switch Sys.systemName() {
 	case "Windows": openfl.filesystem.File.userDirectory.nativePath + "\\EZWorksheet\\app\\";
 	default: openfl.filesystem.File.userDirectory.nativePath + "/EZWorksheet/app/";
 };
 
-final fallbackWithoutPostfix:String = openfl.filesystem.File.userDirectory.nativePath;
+#if (haxe_ver < "4.2.0") public static #end final fallbackWithoutPostfix:String = openfl.filesystem.File.userDirectory.nativePath;
 
-function getVersionList(callback:(Array<String>) -> Void) {
+#if (haxe_ver < "4.2.0") public static #end function getVersionList(callback:(Array<String>) -> Void) {
 	var httpreq = new Http(appVersionListLink);
 
 	httpreq.onData = function(data) {
@@ -57,13 +60,13 @@ function getVersionList(callback:(Array<String>) -> Void) {
 	httpreq.request();
 }
 
-function hasProgram(version:String) {
+#if (haxe_ver < "4.2.0") public static #end function hasProgram(version:String) {
 	var exists = FileSystem.exists(programFolder + version);
 	if (!exists) exists = FileSystem.exists(fallbackProgramFolder + version);
 	return exists;
 }
 
-function startInstallWithSaveAndBar(progressBar:Shape, version:String, infoText:TextField, parent:DisplayObjectContainer, container:Sprite) {
+#if (haxe_ver < "4.2.0") public static #end function startInstallWithSaveAndBar(progressBar:Shape, version:String, infoText:TextField, parent:DisplayObjectContainer, container:Sprite) {
 	var request = new openfl.net.URLLoader();
 
 	request.dataFormat = URLLoaderDataFormat.BINARY;
@@ -142,7 +145,7 @@ function startInstallWithSaveAndBar(progressBar:Shape, version:String, infoText:
 }
 
 // create a function that recursively deletes a directory and all of its contents
-function deleteDirectory(dir:String, ?onRemovedDirectory:String->Void, ?onRemovedFile:String -> Void) {
+#if (haxe_ver < "4.2.0") public static #end function deleteDirectory(dir:String, ?onRemovedDirectory:String->Void, ?onRemovedFile:String -> Void) {
 	var files = FileSystem.readDirectory(dir);
 	for (f in files) {
 		if (FileSystem.isDirectory(dir + "\\" + f)) {
@@ -156,7 +159,7 @@ function deleteDirectory(dir:String, ?onRemovedDirectory:String->Void, ?onRemove
 	FileSystem.deleteDirectory(dir);
 }
 
-function writeProgram(folder:String, entries:haxe.ds.List<haxe.zip.Entry>) {
+#if (haxe_ver < "4.2.0") public static #end function writeProgram(folder:String, entries:haxe.ds.List<haxe.zip.Entry>) {
 	for (entry in entries) {
 		var data = Reader.unzip(entry);
 		if (entry.fileName.substring(entry.fileName.lastIndexOf('/') + 1) == '' && entry.data.toString() == '') {
@@ -171,14 +174,14 @@ function writeProgram(folder:String, entries:haxe.ds.List<haxe.zip.Entry>) {
 	}
 }
 
-function makeUserFolder(folder:String) {
+#if (haxe_ver < "4.2.0") public static #end function makeUserFolder(folder:String) {
 	if (folder.split('\\')[-2] != 'Users') {
 		return makeUserFolder(folder.substring(0, folder.lastIndexOf('\\')));
 	}
 	return folder;
 }
 
-function getInstalledVersions() {
+#if (haxe_ver < "4.2.0") public static #end function getInstalledVersions() {
 	var files:Array<String> = [];
 	//first. check if the program is installed in the default program directory
 	try {
@@ -193,7 +196,7 @@ function getInstalledVersions() {
 	
 }
 
-function uninstallVersions(versions:Array<String>, onRemovedVersion:String -> Void, onRemovedFile:String -> Void, onError:Exception -> Void) {
+#if (haxe_ver < "4.2.0") public static #end function uninstallVersions(versions:Array<String>, onRemovedVersion:String -> Void, onRemovedFile:String -> Void, onError:Exception -> Void) {
 	try {
 		var directory = FileSystem.readDirectory(programFolder);
 		for (folder in directory) {
@@ -216,3 +219,6 @@ function uninstallVersions(versions:Array<String>, onRemovedVersion:String -> Vo
 		}
 	}
 }
+#if (haxe_ver < "4.2.0")
+}
+#end

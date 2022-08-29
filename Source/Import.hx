@@ -13,3 +13,4 @@ import Config.fallbackWithoutPostfix;
 import Config.startInstallWithSaveAndBar;
 import Config.installerVersionLink;
 import openfl.Lib.application as app;
+import Config.SIDEBAR_WIDTH;

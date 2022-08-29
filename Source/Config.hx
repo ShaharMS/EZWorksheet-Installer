@@ -1,5 +1,6 @@
 package;
 
+import haxe.Exception;
 import openfl.display.DisplayObjectContainer;
 import sys.io.File;
 import haxe.zip.Reader;
@@ -29,6 +30,8 @@ final appVersionListLink:String = "https://ezworksheet.spacebubble.io/api/versio
 final installerVersionLink:String = "https://ezworksheet.spacebubble.io/api/installerVersion";
 final installerFolder = "installer";
 final version = "beta-1.0.0";
+final SIDEBAR_WIDTH = 115;
+
 
 final programFolder = switch Sys.systemName() {
 	case "Windows": openfl.filesystem.File.documentsDirectory.nativePath + "\\EZWorksheet\\app\\";
@@ -139,15 +142,15 @@ function startInstallWithSaveAndBar(progressBar:Shape, version:String, infoText:
 }
 
 // create a function that recursively deletes a directory and all of its contents
-function deleteDirectory(dir:String) {
+function deleteDirectory(dir:String, ?onRemovedDirectory:String->Void, ?onRemovedFile:String -> Void) {
 	var files = FileSystem.readDirectory(dir);
 	for (f in files) {
 		if (FileSystem.isDirectory(dir + "\\" + f)) {
 			deleteDirectory(dir + "\\" + f);
-			trace("Deleted " + dir + "\\" + f);
+			if (onRemovedDirectory != null) onRemovedDirectory(f);
 		} else {
 			FileSystem.deleteFile(dir + "\\" + f);
-			trace("Deleted " + dir + "\\" + f);
+			if (onRemovedFile != null) onRemovedFile(f);
 		}
 	}
 	FileSystem.deleteDirectory(dir);
@@ -181,11 +184,35 @@ function getInstalledVersions() {
 	try {
 		files = FileSystem.readDirectory(programFolder);
 	} catch (e) {
-		trace("Unable to find versions in " + programFolder + ": " + e.message);
+		trace("Unable to find versions in " + programFolder + ": (" + e.message + ") - Using fallback directory: " + fallbackProgramFolder);
 		try {
 			files = FileSystem.readDirectory(fallbackProgramFolder);
 		} catch (e) trace("Unable to find versions in " + programFolder + ": " + e.message);
 	}
 	return files;
 	
+}
+
+function uninstallVersions(versions:Array<String>, onRemovedVersion:String -> Void, onRemovedFile:String -> Void, onError:Exception -> Void) {
+	try {
+		var directory = FileSystem.readDirectory(programFolder);
+		for (folder in directory) {
+			if (!versions.contains(folder)) continue;
+			deleteDirectory(programFolder + folder, onRemovedFile, onRemovedFile);
+			onRemovedVersion(folder);
+		}
+	} catch (e) {
+		trace("Unable to find versions in " + programFolder + ": (" + e.message + ") - Using fallback directory: " + fallbackProgramFolder);
+		try {
+			var directory = FileSystem.readDirectory(fallbackProgramFolder);
+			for (folder in directory) {
+				if (!versions.contains(folder))
+					continue;
+				deleteDirectory(fallbackProgramFolder + folder, onRemovedFile, onRemovedFile);
+				onRemovedVersion(folder);
+			}
+		} catch (e) {
+			onError(e);
+		}
+	}
 }

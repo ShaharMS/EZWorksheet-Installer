@@ -29,11 +29,11 @@ class Installer extends Sprite {
 	public function new() {
 		super();
 
-		sidemenu = new SideMenu(115);
+		sidemenu = new SideMenu(SIDEBAR_WIDTH);
 
 		var exitButton:Button = new Button();
 		exitButton.text = "Exit";
-		exitButton.width = 105;
+		exitButton.width = SIDEBAR_WIDTH - 10;
 		exitButton.height = 21;
 		exitButton.onClick = e -> {
 			parent.addChild(new Menu());
@@ -42,19 +42,19 @@ class Installer extends Sprite {
 		sidemenu.pushBottom(exitButton);
 		var nextButton:Button = new Button();
 		nextButton.text = "Next >";
-		nextButton.width = 105;
+		nextButton.width = SIDEBAR_WIDTH - 10;
 		nextButton.height = 21;
 		nextButton.onClick = e -> moveForward();
 		sidemenu.pushBottom(nextButton);
 		var backButton:Button = new Button();
 		backButton.text = "< Back";
-		backButton.width = 105;
+		backButton.width = SIDEBAR_WIDTH - 10;
 		backButton.height = 21;
 		backButton.onClick = e -> moveBackwards();
 		sidemenu.pushBottom(backButton);
 		var helpButton:Button = new Button();
 		helpButton.text = "Help";
-		helpButton.width = 105;
+		helpButton.width = SIDEBAR_WIDTH - 10;
 		helpButton.height = 21;
 		helpButton.onClick = e -> Lib.getURL(new URLRequest("ezworksheet.spacebubble.io/installer/help"));
 		sidemenu.pushBottom(helpButton);
@@ -67,10 +67,10 @@ class Installer extends Sprite {
 		if (currentSeg >= 4) return;
 		currentSeg++;
 		switch currentSeg {
-			case 1: {removeChildren(); addChild(sidemenu); addChild(new Segment1(this));}
-			case 2: {removeChildren(); addChild(sidemenu); addChild(new Segment2(this));}
-			case 3: {removeChildren(); addChild(sidemenu); addChild(new Segment3(this));}
-			case 4: {removeChildren(); addChild(sidemenu); addChild(new Segment4(this));}
+			case 1: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment1(this));}
+			case 2: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment2(this));}
+			case 3: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment3(this));}
+			case 4: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment4(this));}
 		}
 	}
 
@@ -78,10 +78,10 @@ class Installer extends Sprite {
 		if (currentSeg <= 1) return;
 		currentSeg--;
 		switch currentSeg {
-			case 1: {removeChildren(); addChild(sidemenu); addChild(new Segment1(this));}
-			case 2: {removeChildren(); addChild(sidemenu); addChild(new Segment2(this));}
-			case 3: {removeChildren(); addChild(sidemenu); addChild(new Segment3(this));}
-			case 4: {removeChildren(); addChild(sidemenu); addChild(new Segment4(this));}
+			case 1: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment1(this));}
+			case 2: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment2(this));}
+			case 3: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment3(this));}
+			case 4: {app.window.onResize.removeAll(); removeChildren(); addChild(sidemenu); addChild(new Segment4(this));}
 		}
 	}
 }
@@ -93,6 +93,7 @@ class Segment1 extends Sprite {
 	var verDescription:TextField;
 	var fixDescription:TextField;
 	var dropdown:DropDown;
+
 	public function new(installer:Installer) {
 		super();
 		name = "Seg1";
@@ -102,6 +103,9 @@ class Segment1 extends Sprite {
 		title.y = 10;
 		title.defaultTextFormat = new TextFormat("_sans", 24, 0xCAFFFFFF, true);
 		title.width = title.textWidth + 4;
+		title.height = title.textHeight + 4;
+		title.multiline = true;
+		title.wordWrap = true;
 
 		description = new TextField();
 		description.text = "When choosing a version, the installer will check if that version is already installed. If it is, it will ask you if you want to fix your installation. If you choose to fix your installation, it will delete all files in the installation folder and download the new version. Personal data should not be deleted.";
@@ -174,6 +178,33 @@ class Segment1 extends Sprite {
 		addChild(dropdown);
 		addChild(fixDescription);
 		addChild(verDescription);
+
+		app.window.onResize.add(reposition);
+	}
+
+	function reposition(w:Int, h:Int) {
+		title.width = w - SIDEBAR_WIDTH - 10;
+		title.height = title.textHeight + 4;
+
+		description.y = Math.max(title.y + title.height, 60);
+		description.width = w - SIDEBAR_WIDTH - 10;
+		description.height = description.textHeight + 4;
+		dropdown = new DropDown();
+
+		//removeChild(dropdown);
+		//removeChild(fixDescription);
+		dropdown.y = description.y + description.textHeight + 20;
+		dropdown.width = Math.min(110, w - SIDEBAR_WIDTH - 10) + 10;
+
+		fixDescription.x = Math.min(110, w - SIDEBAR_WIDTH - 10) + 15;
+		fixDescription.y = dropdown.y;
+		fixDescription.width = Math.max(180, w - SIDEBAR_WIDTH - dropdown.x - fixDescription.width);
+		fixDescription.height = fixDescription.textHeight + 4;
+		//addChild(dropdown);
+		//addChild(fixDescription);
+		verDescription.y = dropdown.y + 40;
+		verDescription.width = w - SIDEBAR_WIDTH - 10;
+		verDescription.height = verDescription.textHeight + 4;
 	}
 }
 
@@ -195,6 +226,9 @@ class Segment2 extends Sprite {
 		title.y = 10;
 		title.defaultTextFormat = new TextFormat("_sans", 24, 0xCAFFFFFF, true);
 		title.width = title.textWidth + 4;
+		title.height = title.textHeight + 4;
+		title.multiline = true;
+		title.wordWrap = true;
 
 		description = new TextField();
 		description.text = "To install the program to the default directory, just skip this step. Otherwise, choose the directory where you want to install the program in. When installation ends, a folder will be created in the chosen directory, with the name of the version.";
@@ -227,6 +261,22 @@ class Segment2 extends Sprite {
 		addChild(title);
 		addChild(description);
 		addChild(path);
+
+		app.window.onResize.add(reposition);
+	}
+
+	function reposition(w:Int, h:Int) {
+		name = "Seg1";
+		title.width = title.textWidth + 4;
+		title.height = title.textHeight + 4;
+
+		description.y = Math.max(60, title.y + title.height);
+		description.width = w - SIDEBAR_WIDTH - 10;
+		description.height = description.textHeight + 4;
+
+		path = new haxe.ui.components.TextField();
+		path.y = description.y + description.height + 16;
+		path.width = w - SIDEBAR_WIDTH - 10;
 	}
 }
 
@@ -244,8 +294,12 @@ class Segment3 extends Sprite {
 		s.y = app.window.height / 4 * 3 - s.height / 2;
 		addChild(s);
 		addChild(textField);
-		startInstallWithSaveAndBar(s, installer.VERSION, textField, this.parent, this);
+		addEventListener(Event.ADDED_TO_STAGE, e -> startInstallWithSaveAndBar(s, installer.VERSION, textField, this.parent, this));
+	
+		app.window.onResize.add(reposition);
 	}
+
+	function reposition(w:Int, h:Int) {}
 }
 
 class Segment4 extends Sprite {

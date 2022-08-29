@@ -16,7 +16,7 @@ class Menu extends Sprite {
     
     var title:TextField;
     var description:TextField;
-
+    var desc2:TextField;
     var sidemenu:SideMenu;
 
     public function new() {
@@ -28,6 +28,8 @@ class Menu extends Sprite {
         title.y = 10;
         title.defaultTextFormat = new TextFormat("_sans" , 24, 0xCAFFFFFF, true);
         title.width = title.textWidth + 4;
+        title.wordWrap = true;
+        title.multiline = true;
 
         description = new TextField();
         description.text = "Welcome to the EZWorksheet installer!\n\n" +
@@ -36,7 +38,7 @@ class Menu extends Sprite {
 
         description.x = 10;
         description.y = 50;
-        description.width = app.window.width - 150;
+        description.width = app.window.width - SIDEBAR_WIDTH - 35;
         description.height = 200;
         description.defaultTextFormat = new TextFormat("_sans" , 13, 0xCAFFFFFF);
         description.wordWrap = true;
@@ -46,10 +48,10 @@ class Menu extends Sprite {
 		addChild(title);
 		addChild(description);
 
-        var desc2 = new TextField();
-        desc2.text = "A New Version Of The Installer Is Available.\nClick This Text To Update";
+        desc2 = new TextField();
+        desc2.text = "A New Version Of The Installer Is Available.\nClick This Link To Update";
         desc2.defaultTextFormat = new TextFormat("_sans", 12, 0x00EEFF, true, false, false, null , null, "center");
-        desc2.width = app.window.width - 115 - 25;
+        desc2.width = app.window.width - SIDEBAR_WIDTH - 25;
         desc2.x = 10;
         desc2.height = desc2.textHeight + 4;
         desc2.y = app.window.height - 70;
@@ -71,43 +73,76 @@ class Menu extends Sprite {
 		};
         httpReq.onError = (e) -> trace(e);
 
-        sidemenu = new SideMenu(115);
+        sidemenu = new SideMenu(SIDEBAR_WIDTH);
 
         var installButton:Button = new Button();
         installButton.text = "Install";
-        installButton.width = 105;
+        installButton.width = SIDEBAR_WIDTH - 10;
         installButton.height = 21;
-        installButton.onClick = e -> {parent.addChild(new Installer()); parent.removeChild(this);};
+        installButton.onClick = e -> {
+            app.window.onResize.removeAll(); 
+            parent.addChild(new Installer()); 
+            parent.removeChild(this);};
+
         sidemenu.push(installButton);
+
         var updateButton = new Button();
         updateButton.text = "Update";
-        updateButton.width = 105;
+        updateButton.width = SIDEBAR_WIDTH - 10;
         updateButton.height = 21;
-        updateButton.onClick = e -> {parent.addChild(new Updater()); parent.removeChild(this);};
+        updateButton.onClick = e -> {
+            app.window.onResize.removeAll(); 
+            parent.addChild(new Updater()); 
+            parent.removeChild(this);};
+
         sidemenu.push(updateButton);
+
         var uninstallButton:Button = new Button();
         uninstallButton.text = "Uninstall";
-        uninstallButton.width = 105;
+        uninstallButton.width = SIDEBAR_WIDTH - 10;
         uninstallButton.height = 21;
-        uninstallButton.onClick = e -> {parent.addChild(new UnInstaller()); parent.removeChild(this);};
+        uninstallButton.onClick = e -> {
+            app.window.onResize.removeAll(); 
+            parent.addChild(new UnInstaller()); 
+            parent.removeChild(this);};
+            
         sidemenu.push(uninstallButton);
 
         var exitButton:Button = new Button();
         exitButton.text = "Exit";
-        exitButton.width = 105;
+        exitButton.width = SIDEBAR_WIDTH - 10;
         exitButton.height = 21;
-        exitButton.onClick = e -> {Sys.exit(0);};
+        exitButton.onClick = e -> {
+            Sys.exit(0);
+        };
+
         sidemenu.pushBottom(exitButton);
+        
         var helpButton:Button = new Button();
         helpButton.text = "Help";
-        helpButton.width = 105;
+        helpButton.width = SIDEBAR_WIDTH - 10;
         helpButton.height = 21;
-        helpButton.onClick = e -> {Lib.getURL(new URLRequest("https://ezworksheet.spacebubble.io/installer/help"));};
+        helpButton.onClick = e -> {
+            Lib.getURL(new URLRequest("https://ezworksheet.spacebubble.io/installer/help"));
+        };
         sidemenu.pushBottom(helpButton);
 
         addChild(sidemenu);
 
 		addEventListener(Event.ADDED_TO_STAGE, e -> httpReq.request());
+        app.window.onResize.add(reposition);
+    }
 
+    function reposition(w:Int, h:Int) {
+        title.width = w - SIDEBAR_WIDTH - 10;
+		title.height = title.textHeight + 4;
+
+		description.y = title.y + title.height;
+		description.width = w - SIDEBAR_WIDTH - 10;
+		description.height = description.textHeight + 4;
+
+		desc2.width = w - SIDEBAR_WIDTH - 25;
+		desc2.height = desc2.textHeight + 4;
+		desc2.y = Math.max(h - 70, description.y + description.height);
     }
 }

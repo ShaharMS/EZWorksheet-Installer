@@ -44,14 +44,10 @@ class Main extends Sprite {
 		}
 		super();
 		switch mode {
-			case INSTALL:
-				addChild(new Installer());
-			case UNINSTALL:
-				addChild(new UnInstaller());
-			case UPDATE:
-				addChild(new Updater());
-			case MANUAL:
-				addChild(new Menu());
+			case INSTALL: addChild(new Installer());
+			case UNINSTALL: addChild(new UnInstaller());
+			case UPDATE: addChild(new Updater());
+			case MANUAL: addChild(new Menu());
 		}
 	}
 }

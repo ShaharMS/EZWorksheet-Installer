@@ -32,11 +32,11 @@ class UnInstaller extends Sprite {
 	public function new() {
 		super();
 		getInstalledVersions();
-		sidemenu = new SideMenu(115);
+		sidemenu = new SideMenu(SIDEBAR_WIDTH);
 
 		var exitButton:Button = new Button();
 		exitButton.text = "Exit";
-		exitButton.width = 105;
+		exitButton.width = SIDEBAR_WIDTH - 10;
 		exitButton.height = 21;
 		exitButton.onClick = e -> {
 			parent.addChild(new Menu());
@@ -45,19 +45,19 @@ class UnInstaller extends Sprite {
 		sidemenu.pushBottom(exitButton);
 		var nextButton:Button = new Button();
 		nextButton.text = "Next >";
-		nextButton.width = 105;
+		nextButton.width = SIDEBAR_WIDTH - 10;
 		nextButton.height = 21;
 		nextButton.onClick = e -> moveForward();
 		sidemenu.pushBottom(nextButton);
 		var backButton:Button = new Button();
 		backButton.text = "< Back";
-		backButton.width = 105;
+		backButton.width = SIDEBAR_WIDTH - 10;
 		backButton.height = 21;
 		backButton.onClick = e -> moveBackwards();
 		sidemenu.pushBottom(backButton);
 		var helpButton:Button = new Button();
 		helpButton.text = "Help";
-		helpButton.width = 105;
+		helpButton.width = SIDEBAR_WIDTH - 10;
 		helpButton.height = 21;
 		helpButton.onClick = e -> Lib.getURL(new URLRequest("ezworksheet.spacebubble.io/installer/help"));
 		sidemenu.pushBottom(helpButton);
@@ -121,7 +121,7 @@ class USegment1 extends Sprite {
 		description.mouseEnabled = false;
 
 		scrollview = new ScrollView();
-		scrollview.width = app.window.width - 115;
+		scrollview.width = app.window.width - SIDEBAR_WIDTH;
 		hbox = new HBox();
 		hbox.continuous = true;
 		hbox.width = app.window.width - 135;

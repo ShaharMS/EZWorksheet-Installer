@@ -1,5 +1,6 @@
 package;
 
+import haxe.io.Path;
 import sys.thread.Thread;
 import sys.FileSystem;
 import sys.io.File;
@@ -26,6 +27,7 @@ class Menu extends Sprite {
     var sidemenu:SideMenu;
     var versionDropdown:DropDown;
     var launch:Button;
+    var shortcut:Button;
 
     public function new() {
         super();
@@ -42,7 +44,7 @@ class Menu extends Sprite {
 
         description = new TextField();
         description.text = "Welcome to the EZWorksheet installer!\n\n" +
-            "If its your first time around, thank you for installing EZWorksheet:)\n\n" +
+            "If it's your first time around, thank you for installing EZWorksheet :)\n\n" +
             "To continue, please choose an option from the side menu.\n\n" + 
             "To launch the app, choose a version from the dropdown below, and press \"Launch\"";
 
@@ -78,28 +80,59 @@ class Menu extends Sprite {
 			    try {
                     
 					trace(programFolder + versionDropdown.selectedItem.text);
-					FileSystem.readDirectory(programFolder + versionDropdown.selectedItem.text + "\\" + executableName);
-                    Sys.setCwd(programFolder + versionDropdown.selectedItem.text);
+					Sys.setCwd(programFolder + versionDropdown.selectedItem.text + #if windows "\\" #else "/" #end + versionDropdown.selectedItem.text);
                     trace(Sys.getCwd());
-				    var process = new Process("./" + executableName, []);
-					var exitCode = process.exitCode();
-                    var handle = File.write("log.txt", false);
-					handle.writeString(process.stderr.readAll().toString() + "\n\n\n\n====\n\n\n\n" + process.stdout.readAll().toString());
-                    handle.close();
+					var process = new Process("./" + executableName, [
+						'-writelogs=${FileSystem.absolutePath("log.txt")}',
+						'-fonts=${Path.join([programWithoutPostfix, '/fonts/'])}'
+					], true);
 			    } catch (e) {
 					try {
-						trace(fallbackProgramFolder + versionDropdown.selectedItem.text + "\\" + executableName);
-                        Sys.setCwd(fallbackProgramFolder + versionDropdown.selectedItem.text);
-						var process = new Process("./" + executableName, []);
-						var exitCode = process.exitCode();
-                        trace(exitCode);
-						var handle = File.write("log.txt", false);
-						handle.writeString(process.stderr.readAll().toString() + "\n\n\n\n====\n\n\n\n" + process.stdout.readAll().toString());
+						trace(fallbackProgramFolder + versionDropdown.selectedItem.text + #if windows "\\" #else "/" #end + versionDropdown.selectedItem.text + #if windows "\\" #else "/" #end + executableName);
+						Sys.setCwd(fallbackProgramFolder + versionDropdown.selectedItem.text + #if windows "\\" #else "/" #end + versionDropdown.selectedItem.text);
+						var process = new Process("./" + executableName, [
+                            '-writelogs=${FileSystem.absolutePath("log.txt")}', 
+                            '-fonts=${Path.join([fallbackWithoutPostfix, '/fonts/'])}'
+                        ], true);
 					} catch (e) {trace(e);}
                 }
             });
         }
-        addChild(launch);
+		addChild(launch);
+
+        shortcut = new Button();
+		shortcut.text = 'Create Shortcut to version: ';
+		shortcut.verticalAlign = "center";
+		shortcut.x = 10;
+		shortcut.y = versionDropdown.y + 35;
+		shortcut.height = versionDropdown.height != 0 ? versionDropdown.height : 30;
+        shortcut.onClick = e -> {
+            try {
+			    var handle = File.write("assets/make-shortcut.ps1");
+                handle.writeString('
+                    function createShortcut {
+                        param ([string]${"$"}StartPath, [string]${"$"}TargetFile, [string]${"$"}ShortcutFile, [string]${"$"}IconPath)
+                        ${"$"}WScriptShell = New-Object -ComObject WScript.Shell
+                        ${"$"}Shortcut = ${"$"}WScriptShell.CreateShortcut(${"$"}ShortcutFile)
+                        ${"$"}Shortcut.TargetPath = ${"$"}TargetFile
+                        ${"$"}Shortcut.IconLocation = ${"$"}IconPath
+                        ${"$"}Shortcut.WorkingDirectory = ${"$"}StartPath
+                        ${"$"}Shortcut.Arguments = \'-writelogs=${FileSystem.absolutePath("log.txt")}\'+\'-fonts=${Path.join([fallbackWithoutPostfix, '/fonts/'])}\'
+                        ${"$"}Shortcut.Save()
+                    }
+                    
+                    createShortcut \"${Path.join([getProgramFolder(), versionDropdown.selectedItem.text, versionDropdown.selectedItem.text])}\" \"${Path.join([getProgramFolder(), versionDropdown.selectedItem.text, versionDropdown.selectedItem.text, executableName])}\" \"${Path.join([openfl.filesystem.File.desktopDirectory.nativePath, "EZWorksheet.lnk"])}\" \"${FileSystem.absolutePath("assets/icon.ico")}\" 
+                    createShortcut \"${Path.join([getProgramFolder(), versionDropdown.selectedItem.text, versionDropdown.selectedItem.text])}\" \"${Path.join([getProgramFolder(), versionDropdown.selectedItem.text, versionDropdown.selectedItem.text, executableName])}\" \"${Path.join([openfl.filesystem.File.userDirectory.nativePath, "AppData", "Roaming", "Microsoft", "Windows", "Start Menu", "Programs", "EZWorksheet", 'EZWorksheet.lnk'])}\" \"${FileSystem.absolutePath("assets/icon.ico")}\" 
+                    '                    
+                    );
+                handle.close();
+                var p = new Process("powershell", ["-File", FileSystem.absolutePath("assets/make-shortcut.ps1")]);
+                var ec = p.exitCode();
+                trace(ec, p.stderr.readAll().toString(), p.stdout.readAll().toString());
+            } catch (e) trace(e);
+        }
+		versionDropdown.onChange = e -> shortcut.text = 'Create Shortcut to version: ${versionDropdown.selectedItem.text}';
+        addChild(shortcut);
 
         desc2 = new TextField();
         desc2.text = "A New Version Of The Installer Is Available.\nClick This Link To Update";
@@ -202,5 +235,6 @@ class Menu extends Sprite {
 		versionDropdown.width = 110;
 		launch.y = versionDropdown.y;
 		launch.height = versionDropdown.height != 0 ? versionDropdown.height : 30;
+		shortcut.y = versionDropdown.y + 35;
     }
 }

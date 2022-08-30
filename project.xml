@@ -15,4 +15,6 @@
 	<icon path="assets/preicon.ico"/>
 	
 	<haxeflag name="-D haxeui_nofilters" />
+
+	<icon path="assets/favicon.svg"/>
 </project>

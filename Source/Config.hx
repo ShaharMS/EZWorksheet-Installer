@@ -1,5 +1,6 @@
 package;
 
+import haxe.io.Path;
 import openfl.desktop.NativeProcess;
 import openfl.desktop.NativeProcessStartupInfo;
 import haxe.Exception;
@@ -45,6 +46,12 @@ class Config {
 	case "Linux": "";
 	default: "";
 };
+#if (haxe_ver < "4.2.0") public static #end final installerName = "EZWorksheet-Installer" + switch Sys.systemName() {
+	case "Windows": ".exe";
+	case "Mac": ".dmg";
+	case "Linux": "";
+	default: "";
+};
 #if (haxe_ver < "4.2.0") public static #end final programFolder = switch Sys.systemName() {
 	case "Windows": openfl.filesystem.File.documentsDirectory.nativePath + "\\EZWorksheet\\app\\";
 	default: openfl.filesystem.File.documentsDirectory.nativePath + "/EZWorksheet/app/";
@@ -54,8 +61,8 @@ class Config {
 	case "Windows": openfl.filesystem.File.userDirectory.nativePath + "\\EZWorksheet\\app\\";
 	default: openfl.filesystem.File.userDirectory.nativePath + "/EZWorksheet/app/";
 };
-
-#if (haxe_ver < "4.2.0") public static #end final fallbackWithoutPostfix:String = openfl.filesystem.File.userDirectory.nativePath;
+#if (haxe_ver < "4.2.0") public static #end final programWithoutPostfix:String = Path.join([openfl.filesystem.File.documentsDirectory.nativePath, "/EZWorksheet/"]);
+#if (haxe_ver < "4.2.0") public static #end final fallbackWithoutPostfix:String = Path.join([openfl.filesystem.File.userDirectory.nativePath, "/EZWorksheet/"]);
 
 #if (haxe_ver < "4.2.0") public static #end function getVersionList(callback:(Array<String>) -> Void) {
 	var httpreq = new Http(appVersionListLink);
@@ -231,26 +238,10 @@ class Config {
 		}
 	}
 }
-	#if (haxe_ver < "4.2.0") public static #end function createDesktopShrotcut(target:OFLFile, shortcut:OFLFile) {
-	if (NativeProcess.isSupported) { // Note: this is only true under extendedDesktop profile
-		var shortcutInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
-
-		// Location of the Windows Scripting Host executable
-			shortcutInfo.executable = new OFLFile("C:/Windows/System32/wscript.exe");
-
-		// Argument 1: script to execute
-			shortcutInfo.arguments.push(OFLFile.applicationDirectory.resolvePath("utils/mkshortcut.js").nativePath);
-
-		// Argument 2: target
-		shortcutInfo.arguments.push("/target:" + target.nativePath);
-
-		// Argument 3: shortcut
-		shortcutInfo.arguments.push("/shortcut:" + shortcut.nativePath);
-
-		var mkShortcutProcess = new NativeProcess();
-		mkShortcutProcess.start(shortcutInfo);
+	#if (haxe_ver < "4.2.0") public static #end function getProgramFolder() {
+		if (FileSystem.isDirectory(programFolder)) return programFolder;
+		return fallbackProgramFolder;
 	}
-}
 #if (haxe_ver < "4.2.0")
 }
 #end

@@ -1,5 +1,6 @@
 package;
 
+import haxe.io.Path;
 import openfl.display.StageScaleMode;
 import haxe.ui.Toolkit;
 import openfl.display.Sprite;
@@ -50,6 +51,39 @@ class Main extends Sprite {
 			case UPDATE: addChild(new Updater());
 			case MANUAL: addChild(new Menu());
 		}
+
+
+		if (!FileSystem.exists(Path.join([openfl.filesystem.File.userDirectory.nativePath, "AppData", "Roaming", "Microsoft", "Windows", "Start Menu", "Programs", "EZWorksheet", 'EZWorksheet.lnk']))) {
+            FileSystem.createDirectory(Path.join([
+				openfl.filesystem.File.userDirectory.nativePath,
+				"AppData",
+				"Roaming",
+				"Microsoft",
+				"Windows",
+				"Start Menu",
+				"Programs",
+				"EZWorksheet"
+			]));
+        }
+
+		var handle = File.write("assets/add-installer-to-start-menu.ps1");
+		handle.writeString('
+                    function createShortcut {
+                        param ([string]${"$"}StartPath, [string]${"$"}TargetFile, [string]${"$"}ShortcutFile, [string]${"$"}IconPath)
+                        ${"$"}WScriptShell = New-Object -ComObject WScript.Shell
+                        ${"$"}Shortcut = ${"$"}WScriptShell.CreateShortcut(${"$"}ShortcutFile)
+                        ${"$"}Shortcut.TargetPath = ${"$"}TargetFile
+                        ${"$"}Shortcut.IconLocation = ${"$"}IconPath
+                        ${"$"}Shortcut.WorkingDirectory = ${"$"}StartPath
+                        ${"$"}Shortcut.Save()
+                    }
+                    
+                    createShortcut \"${Sys.programPath().substring(0, Sys.programPath().length - 10)}\" \"${Path.join([Sys.programPath().substring(0, Sys.programPath().length - 10), installerName])}\" \"${Path.join([openfl.filesystem.File.userDirectory.nativePath, "AppData", "Roaming", "Microsoft", "Windows", "Start Menu", "Programs", "EZWorksheet", 'EZWorksheet Installer.lnk'])}\" \"${FileSystem.absolutePath("assets/installerIcon.ico")}\" 
+                    ');
+		handle.close();
+		var p = new Process("powershell", ["-File", FileSystem.absolutePath("assets/add-installer-to-start-menu.ps1")]);
+		var ec = p.exitCode();
+		trace(ec, p.stderr.readAll().toString(), p.stdout.readAll().toString());
 	}
 }
 

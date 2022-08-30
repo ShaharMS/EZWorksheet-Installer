@@ -1,5 +1,6 @@
 package;
 
+import exceptions.DeletionUnavailableException;
 import haxe.io.Path;
 import openfl.desktop.NativeProcess;
 import openfl.desktop.NativeProcessStartupInfo;
@@ -132,23 +133,11 @@ class Config {
 		try {
 			writeProgram(programFolder, entries);
 		} catch (e) {
-			#if windows
-			infoText.text = '
-				Notice! you have the Windows setting Controlled Access enabled.
-				\n
-				\n 
-				The program will try to reinstall in this directory:
-				\n
-				\n + 
-				${fallbackWithoutPostfix}';
-			infoText.width = app.window.width - 50;
-			infoText.height = infoText.textHeight;
-			// center the text
-			infoText.x = app.window.width / 2 - infoText.textWidth / 2;
-			infoText.y = app.window.height / 2 - infoText.textHeight / 2;
-			#end
-			writeFolder = fallbackProgramFolder;
-			writeProgram(fallbackProgramFolder, entries);
+			try {
+				writeFolder = fallbackProgramFolder;
+				writeProgram(fallbackProgramFolder, entries);
+			} catch (e) throw new DeletionUnavailableException();
+			
 		}
 		infoText.text = 'Done! App Found at:\n\n' + writeFolder + version;
 		infoText.width = infoText.textWidth + 4;
@@ -219,7 +208,9 @@ class Config {
 		var directory = FileSystem.readDirectory(programFolder);
 		for (folder in directory) {
 			if (!versions.contains(folder)) continue;
-			deleteDirectory(programFolder + folder, onRemovedFile, onRemovedFile);
+			try {
+				deleteDirectory(programFolder + folder, onRemovedFile, onRemovedFile);
+			} catch (e) throw new DeletionUnavailableException();
 			onRemovedVersion(folder);
 		}
 	} catch (e) {

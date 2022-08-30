@@ -117,7 +117,7 @@ class Menu extends Sprite {
                         ${"$"}Shortcut.TargetPath = ${"$"}TargetFile
                         ${"$"}Shortcut.IconLocation = ${"$"}IconPath
                         ${"$"}Shortcut.WorkingDirectory = ${"$"}StartPath
-                        ${"$"}Shortcut.Arguments = \'-writelogs=${FileSystem.absolutePath("log.txt")}\'+\'-fonts=${Path.join([fallbackWithoutPostfix, '/fonts/'])}\'
+                        ${"$"}Shortcut.Arguments = \'-writelogs=${FileSystem.absolutePath("log.txt")}\'+\'-fonts=${Path.join([fallbackWithoutPostfix, '/fonts/'])}\'+-installer=${Path.join([Sys.programPath().substring(0, Sys.programPath().length - 10), installerName])}\'\'
                         ${"$"}Shortcut.Save()
                     }
                     

@@ -1,5 +1,6 @@
 package;
 
+import haxe.Timer;
 import exceptions.DeletionUnavailableException;
 import haxe.io.Path;
 import openfl.desktop.NativeProcess;
@@ -85,8 +86,8 @@ class Config {
 
 #if (haxe_ver < "4.2.0") public static #end function startInstallWithSaveAndBar(progressBar:Shape, version:String, infoText:TextField, parent:DisplayObjectContainer, container:Sprite) {
 	var request = new openfl.net.URLLoader();
-
 	request.dataFormat = URLLoaderDataFormat.BINARY;
+	#if !hl
 	request.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent) {
 		progressBar.graphics.clear();
 		progressBar.graphics.lineStyle(1, 0x000000);
@@ -96,6 +97,17 @@ class Config {
 		progressBar.graphics.drawRect(0, 0, e.bytesLoaded / e.bytesTotal * 200, 30);
 		progressBar.graphics.endFill();
 	});
+	#else
+	new Timer(16).run = function () {
+		progressBar.graphics.clear();
+		progressBar.graphics.lineStyle(1, 0x000000);
+		progressBar.graphics.drawRect(0, 0, 200, 30);
+		progressBar.graphics.lineStyle(0);
+		progressBar.graphics.beginFill(0x0FD623);
+		progressBar.graphics.drawRect(0, 0, request.bytesLoaded / request.bytesTotal * 200, 30);
+		progressBar.graphics.endFill();
+	}
+	#end
 	request.addEventListener(ErrorEvent.ERROR, function(e:ErrorEvent) {
 		progressBar.graphics.clear();
 		progressBar.graphics.lineStyle(1, 0x000000);

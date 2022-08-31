@@ -1,5 +1,9 @@
 package;
 
+import openfl.Lib;
+import openfl.net.URLRequest;
+import haxe.ui.components.Button;
+import graphics.SideMenu;
 import openfl.events.Event;
 import haxe.Http;
 import haxe.Timer;
@@ -19,10 +23,34 @@ class Updater extends Sprite {
 
 	public function new() {
 		super();
-		app.window.x = 5;
-		app.window.y = 35;
-		app.window.width = 250;
-		app.window.height = 100;
+
+		if (Sys.args().contains("-autoUpdate") || Sys.args().contains("-update")) {
+			app.window.x = 5;
+			app.window.y = 35;
+			app.window.width = 250;
+			app.window.height = 100;
+		}
+		if (!Sys.args().contains("-autoUpdate") || !Sys.args().contains("-update")) {
+			var sidemenu = new SideMenu(SIDEBAR_WIDTH);
+
+			var exitButton:Button = new Button();
+			exitButton.text = "Menu";
+			exitButton.width = SIDEBAR_WIDTH - 10;
+			exitButton.height = 21;
+			exitButton.onClick = e -> {
+				parent.addChild(new Menu());
+				parent.removeChild(this);
+			};
+			sidemenu.pushBottom(exitButton);
+			var helpButton:Button = new Button();
+			helpButton.text = "Help";
+			helpButton.width = SIDEBAR_WIDTH - 10;
+			helpButton.height = 21;
+			helpButton.onClick = e -> Lib.getURL(new URLRequest("ezworksheet.spacebubble.io/installer/help"));
+			sidemenu.pushBottom(helpButton);
+
+			addChild(sidemenu);
+		}
 
 		titleField.defaultTextFormat = Main.textFormat;
 		titleField.text = "Checking for updates...";

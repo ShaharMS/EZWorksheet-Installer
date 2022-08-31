@@ -100,6 +100,7 @@ class Menu extends Sprite {
         }
 		addChild(launch);
 
+        #if windows
         shortcut = new Button();
 		shortcut.text = 'Create Shortcut to version: ';
 		shortcut.verticalAlign = "center";
@@ -129,10 +130,11 @@ class Menu extends Sprite {
                 var p = new Process("powershell", ["-File", FileSystem.absolutePath("assets/make-shortcut.ps1")]);
                 var ec = p.exitCode();
                 trace(ec, p.stderr.readAll().toString(), p.stdout.readAll().toString());
-            } catch (e) trace(e);
+            } catch (e) trace(e.details());
         }
-		versionDropdown.onChange = e -> shortcut.text = 'Create Shortcut to version: ${versionDropdown.selectedItem.text}';
+		versionDropdown.onChange = e -> shortcut.text = 'Create Shortcut to version: ${versionDropdown.selectedItem != null ? versionDropdown.selectedItem.text : ""}';
         addChild(shortcut);
+        #end
 
         desc2 = new TextField();
         desc2.text = "A New Version Of The Installer Is Available.\nClick This Link To Update";
@@ -235,6 +237,8 @@ class Menu extends Sprite {
 		versionDropdown.width = 110;
 		launch.y = versionDropdown.y;
 		launch.height = versionDropdown.height != 0 ? versionDropdown.height : 30;
+        #if windows
 		shortcut.y = versionDropdown.y + 35;
+        #end
     }
 }

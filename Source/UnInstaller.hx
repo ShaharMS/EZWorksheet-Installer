@@ -33,7 +33,6 @@ class UnInstaller extends Sprite {
 	public var VERSIONS:Array<String> = [];
 	public function new() {
 		super();
-		getInstalledVersions();
 		sidemenu = new SideMenu(SIDEBAR_WIDTH);
 
 		var exitButton:Button = new Button();
@@ -69,24 +68,20 @@ class UnInstaller extends Sprite {
 	}
 
 	public function moveForward() {
-		if (currentSeg >= 4) return;
+		if (currentSeg >= 2) return;
 		currentSeg++;
 		switch currentSeg {
 			case 1: {removeChildren(); addChild(sidemenu); addChild(new USegment1(this));}
 			case 2: {removeChildren(); addChild(sidemenu); addChild(new USegment2(this));}
-			case 3: {removeChildren(); addChild(sidemenu); addChild(new USegment3(this));}
-			case 4: {removeChildren(); addChild(sidemenu); addChild(new USegment4(this));}
 		}
 	}
 
 	public function moveBackwards() {
-		if (currentSeg <= 1) return;
+		if (currentSeg <= 1) {removeChildren(); parent.addChild(new Menu()); parent.removeChild(this);};
 		currentSeg--;
 		switch currentSeg {
 			case 1: {removeChildren(); addChild(sidemenu); addChild(new USegment1(this));}
 			case 2: {removeChildren(); addChild(sidemenu); addChild(new USegment2(this));}
-			case 3: {removeChildren(); addChild(sidemenu); addChild(new USegment3(this));}
-			case 4: {removeChildren(); addChild(sidemenu); addChild(new USegment4(this));}
 		}
 	}
 }
@@ -105,14 +100,17 @@ class USegment1 extends Sprite {
 		title.x = 10;
 		title.y = 10;
 		title.defaultTextFormat = new TextFormat("_sans", 24, 0xCAFFFFFF, true);
-		title.width = title.textWidth + 4;
+		title.width = app.window.width - SIDEBAR_WIDTH - 10;
+		title.height = title.textHeight + 4;
+		title.multiline = true;
+		title.wordWrap = true;
 
 		description = new TextField();
 		description.text = "Tick the checkboxes behind the versions below to uninstall those versions.\n\nIf you came here to remove the program, thank you for using it thus far :)";
 		description.x = 10;
-		description.y = 60;
-		description.width = app.window.width - 130;
-		description.height = 200;
+		description.y = title.y + title.height + 20;
+		description.width = app.window.width - SIDEBAR_WIDTH - 10;
+		description.height = description.textHeight + 4;
 		description.defaultTextFormat = new TextFormat("_sans", 13, 0xCAFFFFFF);
 		//mark the "Personal data should not be deleted" text with bold
 		var text = "Tick the checkboxes behind the versions below to uninstall those versions.";
@@ -138,13 +136,30 @@ class USegment1 extends Sprite {
 			hbox.addComponent(checkbox);
 		}
 		scrollview.addComponent(hbox);
-		scrollview.y = app.window.height / 5 * 3;
-		scrollview.height = app.window.height / 5 * 2;
+		scrollview.y = description.y + description.height + 20;
+		scrollview.height = app.window.height - scrollview.y - 10;
+		scrollview.width = app.window.width - SIDEBAR_WIDTH - 10;
 		scrollview.customStyle.backgroundOpacity = 0;
 		scrollview.borderSize = 0;
 		addChild(title);
 		addChild(description);
 		addChild(scrollview);
+
+		app.window.onResize.add(reposition);
+	}
+
+	function reposition(w:Int, h:Int) {
+		title.width = w - SIDEBAR_WIDTH - 10;
+		title.height = title.textHeight + 4;
+
+		description.y = title.y + title.height + 20;
+		description.width = w - SIDEBAR_WIDTH - 10;
+		description.height = description.textHeight + 4;
+
+		hbox.width = w - 135;
+		scrollview.y = description.y + description.height + 20;
+		scrollview.height = h - scrollview.y - 10;
+		scrollview.width = w - SIDEBAR_WIDTH - 10;
 	}
 }
 
@@ -177,20 +192,5 @@ class USegment2 extends Sprite {
 		infoText.height = infoText.textHeight + 4;
 		infoText.x = w / 2 - infoText.width / 2 - SIDEBAR_WIDTH / 2;
 		infoText.y = h / 2 - infoText.height / 2;
-	}
-}
-
-class USegment3 extends Sprite {
-	var textField:TextField;
-	public function new(installer:UnInstaller) {
-		super();
-		name = "Seg3";
-	}
-}
-
-class USegment4 extends Sprite {
-	public function new(installer:UnInstaller) {
-		super();
-		name = "Seg4";
 	}
 }

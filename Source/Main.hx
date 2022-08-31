@@ -53,8 +53,9 @@ class Main extends Sprite {
 		}
 
 
-		if (!FileSystem.exists(Path.join([openfl.filesystem.File.userDirectory.nativePath, "AppData", "Roaming", "Microsoft", "Windows", "Start Menu", "Programs", "EZWorksheet", 'EZWorksheet.lnk']))) {
-            FileSystem.createDirectory(Path.join([
+		#if windows
+		try {
+			if (!FileSystem.exists(Path.join([
 				openfl.filesystem.File.userDirectory.nativePath,
 				"AppData",
 				"Roaming",
@@ -62,12 +63,23 @@ class Main extends Sprite {
 				"Windows",
 				"Start Menu",
 				"Programs",
-				"EZWorksheet"
-			]));
-        }
+				"EZWorksheet",
+				'EZWorksheet.lnk'
+			]))) {
+				FileSystem.createDirectory(Path.join([
+					openfl.filesystem.File.userDirectory.nativePath,
+					"AppData",
+					"Roaming",
+					"Microsoft",
+					"Windows",
+					"Start Menu",
+					"Programs",
+					"EZWorksheet"
+				]));
+			}
 
-		var handle = File.write("assets/add-installer-to-start-menu.ps1");
-		handle.writeString('
+			var handle = File.write("assets/add-installer-to-start-menu.ps1");
+			handle.writeString('
                     function createShortcut {
                         param ([string]${"$"}StartPath, [string]${"$"}TargetFile, [string]${"$"}ShortcutFile, [string]${"$"}IconPath)
                         ${"$"}WScriptShell = New-Object -ComObject WScript.Shell
@@ -80,10 +92,13 @@ class Main extends Sprite {
                     
                     createShortcut \"${Sys.programPath().substring(0, Sys.programPath().length - 10)}\" \"${Path.join([Sys.programPath().substring(0, Sys.programPath().length - 10), installerName])}\" \"${Path.join([openfl.filesystem.File.userDirectory.nativePath, "AppData", "Roaming", "Microsoft", "Windows", "Start Menu", "Programs", "EZWorksheet", 'EZWorksheet Installer.lnk'])}\" \"${FileSystem.absolutePath("assets/installerIcon.ico")}\" 
                     ');
-		handle.close();
-		var p = new Process("powershell", ["-File", FileSystem.absolutePath("assets/add-installer-to-start-menu.ps1")]);
-		var ec = p.exitCode();
-		trace(ec, p.stderr.readAll().toString(), p.stdout.readAll().toString());
+
+			handle.close();
+			var p = new Process("powershell", ["-File", FileSystem.absolutePath("assets/add-installer-to-start-menu.ps1")]);
+			var ec = p.exitCode();
+			trace(ec, p.stderr.readAll().toString(), p.stdout.readAll().toString());
+		} catch (e) trace(e.details());
+		#end
 	}
 }
 

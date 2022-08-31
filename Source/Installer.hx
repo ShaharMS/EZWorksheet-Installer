@@ -1,5 +1,6 @@
 package;
 
+import haxe.Timer;
 import openfl.Lib;
 import graphics.SideMenu;
 import haxe.Http;
@@ -64,24 +65,22 @@ class Installer extends Sprite {
 	}
 
 	public inline function moveForward() {
-		if (currentSeg >= 4) return;
+		if (currentSeg >= 3) return;
 		currentSeg++;
 		switch currentSeg {
 			case 1: {removeChildren(); addChild(sidemenu); addChild(new Segment1(this));}
 			case 2: {removeChildren(); addChild(sidemenu); addChild(new Segment2(this));}
 			case 3: {removeChildren(); addChild(sidemenu); addChild(new Segment3(this));}
-			case 4: {removeChildren(); addChild(sidemenu); addChild(new Segment4(this));}
 		}
 	}
 
 	public inline function moveBackwards() {
-		if (currentSeg <= 1) return;
+		if (currentSeg <= 1) {removeChildren(); parent.addChild(new Menu()); parent.removeChild(this);};
 		currentSeg--;
 		switch currentSeg {
 			case 1: {removeChildren(); addChild(sidemenu); addChild(new Segment1(this));}
 			case 2: {removeChildren(); addChild(sidemenu); addChild(new Segment2(this));}
 			case 3: {removeChildren(); addChild(sidemenu); addChild(new Segment3(this));}
-			case 4: {removeChildren(); addChild(sidemenu); addChild(new Segment4(this));}
 		}
 	}
 }
@@ -213,7 +212,7 @@ class Segment2 extends Sprite {
 		super();
 		name = "Seg2";
 		if (installer.FIX) {
-			installer.moveForward();
+			addEventListener(Event.ADDED_TO_STAGE, e -> installer.moveForward());
 		}
 		name = "Seg1";
 		title = new TextField();
@@ -227,12 +226,13 @@ class Segment2 extends Sprite {
 		title.wordWrap = true;
 
 		description = new TextField();
-		description.text = "To install the program to the default directory, just skip this step. Otherwise, choose the directory where you want to install the program in. When installation ends, a folder will be created in the chosen directory, with the name of the version.";
+		description.text = "To install the program to the default directory, just skip this step. Otherwise, choose the directory where you want to install the program in. When installation ends, a folder will be created in the chosen directory, with the name of the version. If you are not trying to do anything fancy, this should remain unchanged.";
 		description.x = 10;
 		description.y = 60;
 		description.width = app.window.width - 130;
 		description.height = 200;
 		description.defaultTextFormat = new TextFormat("_sans", 13, 0xCAFFFFFF);
+		description.setTextFormat(new TextFormat(null, null, null, true), description.text.length - "if you are not trying to do anything fancy, this should remain unchanged.".length, description.text.length);
 		description.wordWrap = true;
 		description.multiline = true;
 		description.selectable = false;
@@ -248,7 +248,7 @@ class Segment2 extends Sprite {
 			var f = new openfl.filesystem.File();
 			f.addEventListener(Event.SELECT, (ev) -> {
 				trace(f.nativePath, f.name);
-				path.text = f.nativePath;
+				path.text = f.nativePath + #if windows "\\EZWorksheet\\app" #else "/EZWorksheet/app" #end;
 				installer.CUSTOM_PATH = path.text != programFolder ? path.text : "";
 			});
 			f.browseForDirectory("Select Installation Directory");
@@ -283,26 +283,33 @@ class Segment3 extends Sprite {
 		name = "Seg3";
 		var s = new Shape();
 		textField = new TextField();
+		textField.text = #if !hl "Starting Installation..." #else 'Installing version ${installer.VERSION}...' #end;
 		textField.defaultTextFormat = new TextFormat("_sans", 16, 0xCAFFFFFF);
+		textField.width = textField.textWidth + 4;
+		textField.height = textField.textHeight + 4;
+		textField.x = app.window.width / 2 - SIDEBAR_WIDTH / 2 - textField.width / 2;
+		textField.y = app.window.height / 2 - textField.height / 2;
 		s.graphics.lineStyle(1, 0x000000);
 		s.graphics.drawRect(0, 0, 200, 30);
 		s.x = app.window.width / 2 - s.width / 2 - 50;
 		s.y = app.window.height / 4 * 3 - s.height / 2;
+		#if !hl
 		addChild(s);
+		#end
 		addChild(textField);
 		addEventListener(Event.ADDED_TO_STAGE, e -> {
-			startInstallWithSaveAndBar(s, installer.VERSION, textField, this.parent, this);
-			textField.x -= SIDEBAR_WIDTH / 2;
+			Timer.delay(() -> {
+				startInstallWithSaveAndBar(s, installer.VERSION, textField, this.parent, this);
+				textField.x -= SIDEBAR_WIDTH / 2;
+			}, 1000);
 		});
 		app.window.onResize.add(reposition);
 	}
 
-	function reposition(w:Int, h:Int) {}
-}
-
-class Segment4 extends Sprite {
-	public function new(installer:Installer) {
-		super();
-		name = "Seg4";
+	function reposition(w:Int, h:Int) {
+		textField.width = textField.textWidth + 4;
+		textField.height = textField.textHeight + 4;
+		textField.x = app.window.width / 2 - SIDEBAR_WIDTH / 2 - textField.width / 2;
+		textField.y = app.window.height / 2 - textField.height / 2;
 	}
 }

@@ -219,6 +219,15 @@ class Menu extends Sprite {
 
 		addEventListener(Event.ADDED_TO_STAGE, e -> httpReq.request());
         app.window.onResize.add(reposition);
+        checkInstalled();
+    }
+
+    function checkInstalled() {
+        if (versionDropdown.dataSource.size == 0) {
+            versionDropdown.visible = false;
+            launch.visible = false;
+            shortcut.visible = false;
+        }
     }
 
     function reposition(w:Int, h:Int) {

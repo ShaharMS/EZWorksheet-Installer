@@ -27,46 +27,46 @@ using StringTools;
 
 import openfl.filesystem.File as OFLFile;
 
-#if (haxe_ver < "4.2.0")
+#if (haxe < version("4.2.0"))
 class Config {
 #end
-#if (haxe_ver < "4.2.0") public static #end final backgroundColor:Int = 0xFF333333;
-#if (haxe_ver < "4.2.0") public static #end final fontColor:Int = 0xEEFFFFFF;
-#if (haxe_ver < "4.2.0") public static #end final fontSize:Int = 14;
-#if (haxe_ver < "4.2.0") public static #end final fontName:String = "_sans";
-#if (haxe_ver < "4.2.0") public static #end final downloadLink:String = "https://ezworksheet.spacebubble.io/app/";
-#if (haxe_ver < "4.2.0") public static #end final appVersionLink:String = "https://ezworksheet.spacebubble.io/api/version";
-#if (haxe_ver < "4.2.0") public static #end final appVersionListLink:String = "https://ezworksheet.spacebubble.io/api/versionList";
-#if (haxe_ver < "4.2.0") public static #end final installerVersionLink:String = "https://ezworksheet.spacebubble.io/api/installerVersion";
-#if (haxe_ver < "4.2.0") public static #end final installerFolder = "installer";
-#if (haxe_ver < "4.2.0") public static #end final version = "beta-1.0.0"; 
-#if (haxe_ver < "4.2.0") public static #end final SIDEBAR_WIDTH = 115;
+#if (haxe < version("4.2.0")) public static #end final backgroundColor:Int = 0xFF333333;
+#if (haxe < version("4.2.0")) public static #end final fontColor:Int = 0xEEFFFFFF;
+#if (haxe < version("4.2.0")) public static #end final fontSize:Int = 14;
+#if (haxe < version("4.2.0")) public static #end final fontName:String = "_sans";
+#if (haxe < version("4.2.0")) public static #end final downloadLink:String = "https://ezworksheet.spacebubble.io/app/";
+#if (haxe < version("4.2.0")) public static #end final appVersionLink:String = "https://ezworksheet.spacebubble.io/api/version";
+#if (haxe < version("4.2.0")) public static #end final appVersionListLink:String = "https://ezworksheet.spacebubble.io/api/versionList";
+#if (haxe < version("4.2.0")) public static #end final installerVersionLink:String = "https://ezworksheet.spacebubble.io/api/installerVersion";
+#if (haxe < version("4.2.0")) public static #end final installerFolder = "installer";
+#if (haxe < version("4.2.0")) public static #end final version = "beta-1.0.0"; 
+#if (haxe < version("4.2.0")) public static #end final SIDEBAR_WIDTH = 115;
 
-#if (haxe_ver < "4.2.0") public static #end final executableName = "EZWorksheet" + switch Sys.systemName() {
+#if (haxe < version("4.2.0")) public static #end final executableName = "EZWorksheet" + switch Sys.systemName() {
 	case "Windows": ".exe";
 	case "Mac": ".dmg";
 	case "Linux": "";
 	default: "";
 };
-#if (haxe_ver < "4.2.0") public static #end final installerName = "EZWorksheet-Installer" + switch Sys.systemName() {
+#if (haxe < version("4.2.0")) public static #end final installerName = "EZWorksheet-Installer" + switch Sys.systemName() {
 	case "Windows": ".exe";
 	case "Mac": ".dmg";
 	case "Linux": "";
 	default: "";
 };
-#if (haxe_ver < "4.2.0") public static #end final programFolder = switch Sys.systemName() {
+#if (haxe < version("4.2.0")) public static #end final programFolder = switch Sys.systemName() {
 	case "Windows": openfl.filesystem.File.documentsDirectory.nativePath + "\\EZWorksheet\\app\\";
 	default: openfl.filesystem.File.documentsDirectory.nativePath + "/EZWorksheet/app/";
 };
 
-#if (haxe_ver < "4.2.0") public static #end final fallbackProgramFolder = switch Sys.systemName() {
+#if (haxe < version("4.2.0")) public static #end final fallbackProgramFolder = switch Sys.systemName() {
 	case "Windows": openfl.filesystem.File.userDirectory.nativePath + "\\EZWorksheet\\app\\";
 	default: openfl.filesystem.File.userDirectory.nativePath + "/EZWorksheet/app/";
 };
-#if (haxe_ver < "4.2.0") public static #end final programWithoutPostfix:String = Path.join([openfl.filesystem.File.documentsDirectory.nativePath, "/EZWorksheet/"]);
-#if (haxe_ver < "4.2.0") public static #end final fallbackWithoutPostfix:String = Path.join([openfl.filesystem.File.userDirectory.nativePath, "/EZWorksheet/"]);
+#if (haxe < version("4.2.0")) public static #end final programWithoutPostfix:String = Path.join([openfl.filesystem.File.documentsDirectory.nativePath, "/EZWorksheet/"]);
+#if (haxe < version("4.2.0")) public static #end final fallbackWithoutPostfix:String = Path.join([openfl.filesystem.File.userDirectory.nativePath, "/EZWorksheet/"]);
 
-#if (haxe_ver < "4.2.0") public static #end function getVersionList(callback:(Array<String>) -> Void) {
+#if (haxe < version("4.2.0")) public static #end function getVersionList(callback:(Array<String>) -> Void) {
 	var httpreq = new Http(appVersionListLink);
 
 	httpreq.onData = function(data) {
@@ -78,13 +78,13 @@ class Config {
 	httpreq.request();
 }
 
-#if (haxe_ver < "4.2.0") public static #end function hasProgram(version:String) {
+#if (haxe < version("4.2.0")) public static #end function hasProgram(version:String) {
 	var exists = FileSystem.exists(programFolder + version);
 	if (!exists) exists = FileSystem.exists(fallbackProgramFolder + version);
 	return exists;
 }
 
-#if (haxe_ver < "4.2.0") public static #end function startInstallWithSaveAndBar(progressBar:Shape, version:String, infoText:TextField, parent:DisplayObjectContainer, container:Sprite) {
+#if (haxe < version("4.2.0")) public static #end function startInstallWithSaveAndBar(progressBar:Shape, version:String, infoText:TextField, parent:DisplayObjectContainer, container:Sprite) {
 	var request = new openfl.net.URLLoader();
 	request.dataFormat = URLLoaderDataFormat.BINARY;
 	#if !hl
@@ -164,7 +164,7 @@ class Config {
 }
 
 // create a function that recursively deletes a directory and all of its contents
-#if (haxe_ver < "4.2.0") public static #end function deleteDirectory(dir:String, ?onRemovedDirectory:String->Void, ?onRemovedFile:String -> Void) {
+#if (haxe < version("4.2.0")) public static #end function deleteDirectory(dir:String, ?onRemovedDirectory:String->Void, ?onRemovedFile:String -> Void) {
 	var files = FileSystem.readDirectory(dir);
 	for (f in files) {
 		if (FileSystem.isDirectory(dir + "\\" + f)) {
@@ -178,7 +178,7 @@ class Config {
 	FileSystem.deleteDirectory(dir);
 }
 
-#if (haxe_ver < "4.2.0") public static #end function writeProgram(folder:String, entries:haxe.ds.List<haxe.zip.Entry>) {
+#if (haxe < version("4.2.0")) public static #end function writeProgram(folder:String, entries:haxe.ds.List<haxe.zip.Entry>) {
 	for (entry in entries) {
 		var data = Reader.unzip(entry);
 		if (entry.fileName.substring(entry.fileName.lastIndexOf('/') + 1) == '' && entry.data.toString() == '') {
@@ -193,14 +193,14 @@ class Config {
 	}
 }
 
-#if (haxe_ver < "4.2.0") public static #end function makeUserFolder(folder:String) {
+#if (haxe < version("4.2.0")) public static #end function makeUserFolder(folder:String) {
 	if (folder.split('\\')[-2] != 'Users') {
 		return makeUserFolder(folder.substring(0, folder.lastIndexOf('\\')));
 	}
 	return folder;
 }
 
-#if (haxe_ver < "4.2.0") public static #end function getInstalledVersions() {
+#if (haxe < version("4.2.0")) public static #end function getInstalledVersions() {
 	var files:Array<String> = [];
 	//first. check if the program is installed in the default program directory
 	if (FileSystem.isDirectory(programFolder)) {
@@ -215,7 +215,7 @@ class Config {
 	
 }
 
-#if (haxe_ver < "4.2.0") public static #end function uninstallVersions(versions:Array<String>, onRemovedVersion:String -> Void, onRemovedFile:String -> Void, onError:Exception -> Void) {
+#if (haxe < version("4.2.0")) public static #end function uninstallVersions(versions:Array<String>, onRemovedVersion:String -> Void, onRemovedFile:String -> Void, onError:Exception -> Void) {
 	try {
 		var directory = FileSystem.readDirectory(programFolder);
 		for (folder in directory) {
@@ -241,10 +241,10 @@ class Config {
 		}
 	}
 }
-	#if (haxe_ver < "4.2.0") public static #end function getProgramFolder() {
+#if (haxe < version("4.2.0")) public static #end function getProgramFolder() {
 		if (FileSystem.isDirectory(programFolder)) return programFolder;
 		return fallbackProgramFolder;
-	}
-#if (haxe_ver < "4.2.0")
+}
+#if (haxe < version("4.2.0"))
 }
 #end
